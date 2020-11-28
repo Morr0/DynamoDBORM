@@ -1,8 +1,6 @@
-﻿using System;
-
-namespace DynamoDBORM.Exceptions
+﻿namespace DynamoDBORM.Exceptions
 {
-    public class NoPublicParameterlessConstructorException : Exception
+    public class NoPublicParameterlessConstructorException : ValidationException
     {
         
     }

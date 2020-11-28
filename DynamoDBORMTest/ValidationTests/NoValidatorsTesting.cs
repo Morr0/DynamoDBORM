@@ -14,7 +14,7 @@ namespace DynamoDBORMTest.ValidationTests
         [Fact]
         public void ShouldPassOnEmptyClassAndStruct()
         {
-            var empty1 = typeof(EmptyClass);
+            var empty1 = typeof(AbsoluteEmptyClass);
             
             _sut.Validate(new List<Type>
             {
