@@ -1,5 +1,4 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions;
 
@@ -9,53 +8,30 @@ namespace DynamoDBORM.Validations
     {
         protected override void Validate<T>(T table)
         {
-            var type = table.GetType();
-            var props = type.GetProperties();
-            
-            TableAttribute attribute = GetTableAttribute(type);
-            HasExistingPartitionKey(attribute, props);
-            HasDefinedSortKeyAndIsCorrect(attribute, props);
+            TableAttribute attribute = GetTableAttribute(table);
+            HasExistingPartitionKey(attribute, table);
+            HasDefinedSortKeyAndIsCorrect(attribute, table);
         }
 
-        private void HasDefinedSortKeyAndIsCorrect(TableAttribute attribute, PropertyInfo[] propertyInfos)
+        private void HasDefinedSortKeyAndIsCorrect<T>(TableAttribute attribute, T table) where T : new()
         {
             if (string.IsNullOrEmpty(attribute.SortKey)) return;
-            
-            bool hasFoundPropNameMatchingSortKeyNameSpecified = false;
-            foreach (var prop in propertyInfos)
-            {
-                if (prop.Name == attribute.SortKey)
-                {
-                    hasFoundPropNameMatchingSortKeyNameSpecified = true;
-                    break;
-                }
-            }
-            
-            if (!hasFoundPropNameMatchingSortKeyNameSpecified)
+
+            if (!HasPropertyNamed(table, attribute.SortKey))
                 throw new TableHasNotSpecifiedPartitionKey(Reason.ReferencedNonExistentSortKey);
         }
 
-        private void HasExistingPartitionKey(TableAttribute attribute, PropertyInfo[] propertyInfos)
+        private void HasExistingPartitionKey<T>(TableAttribute attribute, T table) where T : new()
         {
             if (string.IsNullOrEmpty(attribute.PartitionKey)) throw new TableHasNotSpecifiedPartitionKey();
 
-            bool hasFoundPropNameMatchingPartitionKeyNameSpecified = false;
-            foreach (var prop in propertyInfos)
-            {
-                if (prop.Name == attribute.PartitionKey)
-                {
-                    hasFoundPropNameMatchingPartitionKeyNameSpecified = true;
-                    break;
-                }
-            }
-            
-            if (!hasFoundPropNameMatchingPartitionKeyNameSpecified)
+            if (!HasPropertyNamed(table, attribute.PartitionKey))
                 throw new TableHasNotSpecifiedPartitionKey(Reason.ReferencedNonExistentPartitionKey);
-
         }
 
-        private TableAttribute GetTableAttribute(Type type)
+        private TableAttribute GetTableAttribute<T>(T table) where T : new()
         {
+            var type = table.GetType();
             var classAttrs = type.GetCustomAttributes();
             TableAttribute attribute = null;
             

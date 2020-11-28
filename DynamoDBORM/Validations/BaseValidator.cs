@@ -14,5 +14,22 @@ namespace DynamoDBORM.Validations
         {
             Validate(table);
         }
+
+        protected bool HasPropertyNamed<T>(T table, string propName) where T : new()
+        {
+            var props = table.GetType().GetProperties();
+            bool hasPropWithThatName = false;
+            
+            foreach (var prop in props)
+            {
+                if (prop.Name == propName)
+                {
+                    hasPropWithThatName = true;
+                    break;
+                }
+            }
+
+            return hasPropWithThatName;
+        }
     }
 }
