@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="ValidationTests" />
+      <ProjectReference Include="..\DynamoDBORM\DynamoDBORM.csproj" />
     </ItemGroup>
 
 </Project>

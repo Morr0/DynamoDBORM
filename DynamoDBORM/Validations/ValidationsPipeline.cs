@@ -31,7 +31,7 @@ namespace DynamoDBORM.Validations
         private bool HasNotParameterlessConstructor(Type type)
         {
             var constructor = type.GetConstructor(Type.EmptyTypes);
-            return constructor is not null;
+            return constructor is null;
         }
     }
 }
