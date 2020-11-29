@@ -61,7 +61,8 @@ namespace DynamoDBORMTest.ConvertersTests
             var dict = new Dictionary<string, AttributeValue>
             {
                 { nameof(CompositePrimaryKeyPropsOnly.PartitionKey), new AttributeValue { S = "4646"}},
-                { "sort", new AttributeValue{ S = "jf"}}
+                
+                { "k", new AttributeValue{ S = "jf"}}
             };
 
             Action action = () => _sut.From<CompositePrimaryKeyPropsOnly>(dict);
@@ -114,6 +115,51 @@ namespace DynamoDBORMTest.ConvertersTests
             Action action = () => _sut.From<UnsupportedTypeExists>(dict);
 
             Assert.Throws<UnsupportedTypeException>(action);
+        }
+        
+        [Fact]
+        public void ShouldUseSpecificAttributeNameWithAttributeNameAttribute()
+        {
+            string value = "22";
+            var dict = new Dictionary<string, AttributeValue>
+            {
+                { nameof(DifferentNamedProperty.Id), new AttributeValue{ S = "kg"}},
+                { DifferentNamedProperty.SecondName, new AttributeValue{ S = value}}
+            };
+
+            var obj = _sut.From<DifferentNamedProperty>(dict);
+
+            Assert.Equal(value, obj.X);
+        }
+        
+        [Fact]
+        public void ShouldUseDifferentPartitionKeyNameWithAttributeNameAttribute()
+        {
+            string value = "22";
+            var dict = new Dictionary<string, AttributeValue>
+            {
+                { DifferentNamedPartitionKey.IdName, new AttributeValue{ S = value}}
+            };
+
+            var obj = _sut.From<DifferentNamedPartitionKey>(dict);
+
+            Assert.Equal(value, obj.Id);
+        }
+        
+        [Fact]
+        public void ShouldUseDifferentPrimaryKeyNameWithAttributeNameAttribute()
+        {
+            string value = "22";
+            var dict = new Dictionary<string, AttributeValue>
+            {
+                { DifferentNamedPartitionAndSortKey.PartitionName, new AttributeValue{ S = value}},
+                { DifferentNamedPartitionAndSortKey.SortName, new AttributeValue{ S = value}},
+            };
+
+            var obj = _sut.From<DifferentNamedPartitionAndSortKey>(dict);
+
+            Assert.Equal(value, obj.Partition);
+            Assert.Equal(value, obj.Sort);
         }
     }
 }

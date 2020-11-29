@@ -18,19 +18,51 @@ namespace DynamoDBORM.Converters.Internals
         public T From<T>(Dictionary<string, AttributeValue> attrsValues) where T : new()
         {
             T obj = new T();
-
-            EnsurePrimaryKeyExistsInDynamoDB(obj, attrsValues);
             
+            var tableAttribute = typeof(T).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
+
             var props = typeof(T).GetProperties();
             foreach (var prop in props)
             {
-                if (!attrsValues.ContainsKey(prop.Name)) continue;
-                if (HasUnmappedAttribute(prop)) continue;
+                string propName = prop.Name;
+                
+                bool hasUnMapAttribute = false;
+                var attributes = prop.GetCustomAttributes();
+                foreach (var attribute in attributes)
+                {
+                    if (attribute is UnmappedAttribute)
+                    {
+                        hasUnMapAttribute = true;
+                        break;
+                    }
+                    
+                    if (attribute is AttributeNameAttribute nameAttribute)
+                    {
+                        propName = nameAttribute?.Name;
+                    }
+                }
+                
+                EnsureIfAnyOfPrimaryKeysDoExist(propName, prop, tableAttribute, attrsValues);
+                
+                if (hasUnMapAttribute) continue;
+                
+                if (!attrsValues.ContainsKey(propName)) continue;
 
-                SetValue(prop, obj, attrsValues[prop.Name]);
+                SetValue(prop, obj, attrsValues[propName]);
             }
 
             return obj;
+        }
+
+        private void EnsureIfAnyOfPrimaryKeysDoExist(string propName, PropertyInfo prop, 
+            TableAttribute tableAttribute, Dictionary<string, AttributeValue> attrsValues)
+        {
+            if (prop.Name == tableAttribute.PartitionKey && !attrsValues.ContainsKey(propName))
+                throw new PrimaryKeyInModelNonExistentInDynamoDBException(ConversionExceptionReason.NonExistentPartitionKey);
+
+            else if (prop.Name == tableAttribute.SortKey && !string.IsNullOrEmpty(tableAttribute.SortKey) &&
+                     !attrsValues.ContainsKey(propName))
+                throw new PrimaryKeyInModelNonExistentInDynamoDBException(ConversionExceptionReason.NonExistentSortKey);
         }
 
         private void SetValue<T>(PropertyInfo prop, T obj, AttributeValue attributeValue) where T : new()
@@ -45,33 +77,6 @@ namespace DynamoDBORM.Converters.Internals
             }
                 
             if (propValue is null) throw new UnsupportedTypeException(typeof(T));
-        }
-
-        private bool HasUnmappedAttribute(PropertyInfo prop)
-        {
-            bool hasUnMapAttribute = false;
-            var attributes = prop.GetCustomAttributes();
-            foreach (var attribute in attributes)
-            {
-                if (attribute is UnmappedAttribute)
-                {
-                    hasUnMapAttribute = true;
-                    break;
-                }
-            }
-
-            return hasUnMapAttribute;
-        }
-
-        private void EnsurePrimaryKeyExistsInDynamoDB<T>(T obj, Dictionary<string, AttributeValue> attrsValues) where T : new()
-        {
-            var tableAttribute = typeof(T).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
-
-            if (!attrsValues.ContainsKey(tableAttribute.PartitionKey)) 
-                throw new PrimaryKeyInModelNonExistentInDynamoDBException(ConversionExceptionReason.NonExistentPartitionKey);
-            else if (!string.IsNullOrEmpty(tableAttribute.SortKey) && !attrsValues.ContainsKey(tableAttribute.SortKey))
-                throw new PrimaryKeyInModelNonExistentInDynamoDBException(ConversionExceptionReason.NonExistentSortKey);
-
         }
     }
 }
