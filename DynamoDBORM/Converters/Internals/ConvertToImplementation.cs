@@ -57,9 +57,10 @@ namespace DynamoDBORM.Converters.Internals
                 foreach (var converter in _converters)
                 {
                     attributeValue = converter.ConvertTo(prop, prop.GetValue(table));
+                    if (attributeValue is not null) break;
                 }
 
-                if (attributeValue == null) throw new UnsupportedTypeException(prop.PropertyType);
+                if (attributeValue is null) throw new UnsupportedTypeException(prop.PropertyType);
                 
                 dict.Add(prop.Name, attributeValue);
             }
