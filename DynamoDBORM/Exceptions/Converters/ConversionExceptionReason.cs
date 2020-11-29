@@ -2,7 +2,10 @@
 {
     public enum ConversionExceptionReason : byte
     {
+        Unspecified,
         NullPartitionKey,
-        NullSortKey
+        NullSortKey,
+        NonExistentPartitionKey,
+        NonExistentSortKey
     }
 }

@@ -6,7 +6,5 @@
         {
             Reason = reason;
         }
-
-        public ConversionExceptionReason Reason { get;  }
     }
 }
