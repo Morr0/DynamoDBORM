@@ -29,6 +29,7 @@ namespace DynamoDBORM.Converters.Internals
                 var attributes = prop.GetCustomAttributes();
                 bool hasUnmap = false;
                 bool doNotWriteIfNull = false;
+                string propName = prop.Name;
                 foreach (var attribute in attributes)
                 {
                     if (attribute is UnmappedAttribute)
@@ -38,22 +39,24 @@ namespace DynamoDBORM.Converters.Internals
                     } else if (attribute is DoNotWriteWhenNullAttribute)
                     {
                         doNotWriteIfNull = true;
-                        break;
+                    } else if (attribute is AttributeNameAttribute)
+                    {
+                        propName = (attribute as AttributeNameAttribute).Name;
                     }
                 }
 
                 if (hasUnmap) continue;
 
-                if (prop.Name == partitionKeyName && prop.GetValue(table) is null)
+                if (propName == partitionKeyName && prop.GetValue(table) is null)
                     throw new NullPrimaryKeyException(ConversionExceptionReason.NullPartitionKey);
-                else if (prop.Name == sortKeyName && prop.GetValue(table) is null)
+                else if (propName == sortKeyName && prop.GetValue(table) is null)
                     throw new NullPrimaryKeyException(ConversionExceptionReason.NullSortKey);
                 else if (doNotWriteIfNull)
                 {
                     if (prop.GetValue(table) is null) continue;
                 }
 
-                dict.Add(prop.Name, GetAttribute(prop, table));
+                dict.Add(propName, GetAttribute(prop, table));
             }
 
             return dict;

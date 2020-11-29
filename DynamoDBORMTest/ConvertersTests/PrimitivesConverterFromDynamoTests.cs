@@ -115,7 +115,5 @@ namespace DynamoDBORMTest.ConvertersTests
 
             Assert.Throws<UnsupportedTypeException>(action);
         }
-        
-        
     }
 }

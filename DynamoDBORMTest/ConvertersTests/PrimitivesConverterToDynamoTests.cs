@@ -125,5 +125,51 @@ namespace DynamoDBORMTest.ConvertersTests
 
             Assert.Throws<UnsupportedTypeException>(action);
         }
+        
+        [Fact]
+        public void ShouldUseSpecificAttributeNameWithAttributeNameAttribute()
+        {
+            var obj = new DifferentNamedProperty
+            {
+                Id = "k"
+            };
+
+            var attrs = _sut.To(obj);
+            
+            Assert.True(attrs.ContainsKey(nameof(DifferentNamedProperty.Id)));
+            Assert.False(attrs.ContainsKey(nameof(DifferentNamedProperty.X)));
+            Assert.True(attrs.ContainsKey(DifferentNamedProperty.SecondName));
+        }
+        
+        [Fact]
+        public void ShouldUseDifferentPartitionKeyNameWithAttributeNameAttribute()
+        {
+            var obj = new DifferentNamedPartitionKey
+            {
+                Id = "k"
+            };
+
+            var attrs = _sut.To(obj);
+            
+            Assert.True(attrs.ContainsKey(DifferentNamedPartitionKey.IdName));
+            Assert.False(attrs.ContainsKey(nameof(DifferentNamedPartitionKey.Id)));
+        }
+        
+        [Fact]
+        public void ShouldUseDifferentPrimaryKeyNameWithAttributeNameAttribute()
+        {
+            var obj = new DifferentNamedPartitionAndSortKey
+            {
+                Partition = "parition",
+                Sort = "sort"
+            };
+
+            var attrs = _sut.To(obj);
+            
+            Assert.True(attrs.ContainsKey(DifferentNamedPartitionAndSortKey.PartitionName));
+            Assert.True(attrs.ContainsKey(DifferentNamedPartitionAndSortKey.SortName));
+            Assert.False(attrs.ContainsKey(nameof(DifferentNamedPartitionAndSortKey.Partition)));
+            Assert.False(attrs.ContainsKey(nameof(DifferentNamedPartitionAndSortKey.Sort)));
+        }
     }
 }

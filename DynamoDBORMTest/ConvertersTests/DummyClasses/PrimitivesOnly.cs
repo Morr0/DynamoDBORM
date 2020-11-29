@@ -67,7 +67,30 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
     public class DifferentNamedProperty
     {
         public string Id { get; set; }
-        [AttributeName]
+        [AttributeName(Name = SecondName)]
         public int X { get; set; }
+
+        public const string SecondName = "kfdn";
+    }
+    
+    [Table(PartitionKey = nameof(Id))]
+    public class DifferentNamedPartitionKey
+    {
+        [AttributeName(Name = IdName)]
+        public string Id { get; set; }
+
+        public const string IdName = "ID";
+    }
+    
+    [Table(PartitionKey = nameof(Partition), SortKey = nameof(Sort))]
+    public class DifferentNamedPartitionAndSortKey
+    {
+        [AttributeName(Name = PartitionName)]
+        public string Partition { get; set; }
+        [AttributeName(Name = SortName)]
+        public string Sort { get; set; }
+        
+        public const string PartitionName = "P1";
+        public const string SortName = "S1";
     }
 }
