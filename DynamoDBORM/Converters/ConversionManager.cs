@@ -32,11 +32,16 @@ namespace DynamoDBORM.Converters
             {
                 var attributes = prop.GetCustomAttributes();
                 bool hasUnmap = false;
+                bool doNotWriteIfNull = false;
                 foreach (var attribute in attributes)
                 {
                     if (attribute is UnmappedAttribute)
                     {
                         hasUnmap = true;
+                        break;
+                    } else if (attribute is DoNotWriteWhenNullAttribute)
+                    {
+                        doNotWriteIfNull = true;
                         break;
                     }
                 }
@@ -45,9 +50,13 @@ namespace DynamoDBORM.Converters
 
                 if (prop.Name == partitionKeyName && prop.GetValue(table) is null)
                     throw new NullPrimaryKeyException(ConversionExceptionReason.NullPartitionKey);
-                if (prop.Name == sortKeyName && prop.GetValue(table) is null)
+                else if (prop.Name == sortKeyName && prop.GetValue(table) is null)
                     throw new NullPrimaryKeyException(ConversionExceptionReason.NullSortKey);
-
+                else if (doNotWriteIfNull)
+                {
+                    if (prop.GetValue(table) is null) continue;
+                }
+                
                 AttributeValue attributeValue = null;
                 foreach (var converter in _converters)
                 {
