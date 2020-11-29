@@ -2,7 +2,7 @@
 
 namespace DynamoDBORM.Attributes
 {
-    [AttributeUsage(AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false)]
     public class DoNotWriteWhenNullAttribute : BaseAttribute
     {
         

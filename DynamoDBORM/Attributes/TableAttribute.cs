@@ -2,7 +2,7 @@
 
 namespace DynamoDBORM.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class TableAttribute : BaseAttribute
     {
         /// <summary>
