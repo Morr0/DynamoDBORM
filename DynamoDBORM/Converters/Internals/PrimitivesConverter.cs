@@ -10,7 +10,16 @@ namespace DynamoDBORM.Converters.Internals
     {
         public override AttributeValue ConvertTo(PropertyInfo prop, object value)
         {
-            return ToDynamoDB.To.ContainsKey(prop.PropertyType) ? ToDynamoDB.To[prop.PropertyType](value) : null;
+            return ToDynamoDB.To.ContainsKey(prop.PropertyType) 
+                ? ToDynamoDB.To[prop.PropertyType](value) 
+                : null;
+        }
+
+        public override object ConvertFrom(PropertyInfo prop, AttributeValue attributeValue)
+        {
+            return FromDynamoDB.From.ContainsKey(prop.PropertyType)
+                ? FromDynamoDB.From[prop.PropertyType](attributeValue)
+                : null;
         }
     }
 }

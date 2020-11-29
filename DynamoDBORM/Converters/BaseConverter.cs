@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
+﻿using System.Reflection;
 using Amazon.DynamoDBv2.Model;
 
 namespace DynamoDBORM.Converters
@@ -15,6 +13,16 @@ namespace DynamoDBORM.Converters
         internal AttributeValue ProcessTo(PropertyInfo prop, object value)
         {
             return ConvertTo(prop, value);
+        }
+
+        public virtual object ConvertFrom(PropertyInfo prop, AttributeValue attributeValue)
+        {
+            return new object();
+        }
+
+        internal object ProcessFrom(PropertyInfo prop, AttributeValue attributeValue)
+        {
+            return ConvertFrom(prop, attributeValue);
         }
     }
 }
