@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using DynamoDBORM.Exceptions;
+using DynamoDBORM.Exceptions.Validations;
 
 namespace DynamoDBORM.Validations
 {

@@ -1,6 +1,4 @@
-﻿using DynamoDBORM.Exceptions;
-
-namespace DynamoDBORM.Validations
+﻿namespace DynamoDBORM.Validations
 {
     public abstract class BaseValidator
     {

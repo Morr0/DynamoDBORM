@@ -1,4 +1,4 @@
-﻿namespace DynamoDBORM.Exceptions
+﻿namespace DynamoDBORM.Exceptions.Validations
 {
     public class NoTableAttributeException : ValidationException
     {

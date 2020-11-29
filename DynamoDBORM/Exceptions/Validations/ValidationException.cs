@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DynamoDBORM.Exceptions
+namespace DynamoDBORM.Exceptions.Validations
 {
     public class ValidationException : Exception
     {
