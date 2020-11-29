@@ -62,4 +62,12 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
     {
         public string Name { get; set; }
     }
+
+    [Table(PartitionKey = nameof(Id))]
+    public class DifferentNamedProperty
+    {
+        public string Id { get; set; }
+        [AttributeName]
+        public int X { get; set; }
+    }
 }
