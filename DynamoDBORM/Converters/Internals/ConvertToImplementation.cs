@@ -22,7 +22,7 @@ namespace DynamoDBORM.Converters.Internals
             var tableAttribute = table.GetType().GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
             string partitionKeyName = tableAttribute.PartitionKey;
             string sortKeyName = tableAttribute.SortKey;
-            
+
             var props = table.GetType().GetProperties();
             foreach (var prop in props)
             {
@@ -52,20 +52,25 @@ namespace DynamoDBORM.Converters.Internals
                 {
                     if (prop.GetValue(table) is null) continue;
                 }
-                
-                AttributeValue attributeValue = null;
-                foreach (var converter in _converters)
-                {
-                    attributeValue = converter.ConvertTo(prop, prop.GetValue(table));
-                    if (attributeValue is not null) break;
-                }
 
-                if (attributeValue is null) throw new UnsupportedTypeException(prop.PropertyType);
-                
-                dict.Add(prop.Name, attributeValue);
+                dict.Add(prop.Name, GetAttribute(prop, table));
             }
 
             return dict;
+        }
+
+        private AttributeValue GetAttribute<T>(PropertyInfo prop, T table)
+        {
+            AttributeValue attributeValue = null;
+            foreach (var converter in _converters)
+            {
+                attributeValue = converter.ConvertTo(prop, prop.GetValue(table));
+                if (attributeValue is not null) break;
+            }
+
+            if (attributeValue is null) throw new UnsupportedTypeException(prop.PropertyType);
+
+            return attributeValue;
         }
     }
 }

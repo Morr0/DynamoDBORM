@@ -4,5 +4,8 @@
     &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::.NETCoreApp,Version=v5.0::DynamoDBORMTest.ValidationTests.NoValidatorsTesting.ShouldPassOnEmptyClassAndStruct&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::.NETCoreApp,Version=v5.0::DynamoDBORMTest.ValidationTests.NoValidatorsTesting.ShouldThrowWhenNonEmptyConstructorsInvolved&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::.NETCoreApp,Version=v5.0::DynamoDBORMTest.ValidationTests.HasPrimaryKeyValidatorTesting&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::.NETCoreApp,Version=v5.0::DynamoDBORMTest.ConvertersTests.PrimitivesConverterTests.ShouldConvertToDynamoDBFromSimpleClassWithOneProp&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::.NETCoreApp,Version=v5.0::DynamoDBORMTest.ConvertersTests.PrimitivesConverterToDynamoTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::.NETCoreApp,Version=v5.0::DynamoDBORMTest.ConvertersTests.PrimitivesConverterFromDynamoTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
