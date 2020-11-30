@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters.Internals;
 
@@ -20,7 +21,20 @@ namespace DynamoDBORM.Converters
             
             _toImpl = new ConvertToImplementation(_converters);
             _fromImpl = new ConvertFromImplementation(_converters);
+
+            PopulateACompleteToFromDicts();
         }
+
+        private void PopulateACompleteToFromDicts()
+        {
+            foreach (var converter in _converters)
+            {
+                // TODO populate the 2 props below
+            }
+        }
+
+        internal Dictionary<Type, Func<object, AttributeValue>> ToAttVal { get; set; } = new Dictionary<Type, Func<object, AttributeValue>>();
+        internal Dictionary<Type, Func<AttributeValue, object>> FromAttVal { get; set; } = new Dictionary<Type, Func<AttributeValue, object>>();
 
         public Dictionary<string, AttributeValue> To<T>(T table)
         {
