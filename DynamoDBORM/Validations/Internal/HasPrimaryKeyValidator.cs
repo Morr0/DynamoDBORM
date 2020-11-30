@@ -1,11 +1,13 @@
 ﻿using System.Reflection;
+using System.Runtime.CompilerServices;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions;
 using DynamoDBORM.Exceptions.Validations;
 
-namespace DynamoDBORM.Validations
+[assembly: InternalsVisibleTo("DynamoDBORMTest")]
+namespace DynamoDBORM.Validations.Internal
 {
-    public class HasPrimaryKeyValidator : BaseValidator
+    internal class HasPrimaryKeyValidator : BaseValidator
     {
         protected override void Validate<T>(T table)
         {

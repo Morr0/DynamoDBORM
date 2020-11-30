@@ -8,6 +8,7 @@ using DynamoDBORM.Exceptions;
 using DynamoDBORM.Repositories;
 using DynamoDBORM.Utilities;
 using DynamoDBORM.Validations;
+using DynamoDBORM.Validations.Internal;
 
 namespace DynamoDBORM.Main
 {

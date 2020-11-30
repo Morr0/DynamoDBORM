@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using DynamoDBORM.Exceptions;
 using DynamoDBORM.Exceptions.Validations;
 using DynamoDBORM.Validations;
+using DynamoDBORM.Validations.Internal;
 using DynamoDBORMTest.ValidationTests.DummyClasses;
 using Xunit;
 
