@@ -67,7 +67,7 @@ namespace DynamoDBORM.Converters.Internals
             AttributeValue attributeValue = null;
             foreach (var converter in _converters)
             {
-                attributeValue = converter.ConvertTo(prop, prop.GetValue(table));
+                attributeValue = converter.ProcessTo(prop, prop.GetValue(table));
                 if (attributeValue is not null) break;
             }
 

@@ -70,7 +70,7 @@ namespace DynamoDBORM.Converters.Internals
             object propValue = null;
             foreach (var converter in _converters)
             {
-                propValue = converter.ConvertFrom(prop, attributeValue);
+                propValue = converter.ProcessFrom(prop, attributeValue);
                 if (propValue is null) continue;
                     
                 prop.SetValue(obj, propValue);
