@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters.Internals;
+using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters
 {
@@ -29,7 +30,8 @@ namespace DynamoDBORM.Converters
         {
             foreach (var converter in _converters)
             {
-                // TODO populate the 2 props below
+                ToAttVal.AddOther(converter.GetTos());
+                FromAttVal.AddOther(converter.GetFroms());
             }
         }
 
