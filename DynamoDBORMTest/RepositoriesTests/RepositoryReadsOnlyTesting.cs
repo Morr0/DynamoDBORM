@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
@@ -42,9 +43,35 @@ namespace DynamoDBORMTest.RepositoriesTests
         }
 
         [Fact]
-        public async Task ShouldGetItemFromDynamoDBThatDoesNotExist()
+        public async Task ShouldScanItemsFromDynamoDB()
         {
-            
+            // Arrange
+            string id = "2";
+            Basic obj1 = new Basic
+            {
+                Id = id
+            };
+            Basic obj2 = new Basic
+            {
+                Id = id
+            };
+            _dynamoDBClient.Setup(x =>
+                    x.ScanAsync(It.IsAny<ScanRequest>(), CancellationToken.None))
+                .ReturnsAsync(new ScanResponse
+                {
+                    Items = new List<Dictionary<string, AttributeValue>>
+                    {
+                        Basic.DynamoGetItemResponse(obj1.Id).Item,
+                        Basic.DynamoGetItemResponse(obj2.Id).Item
+                    }
+                });
+
+            // Act
+            var list = new List<Basic>(await _sut.GetMany<Basic>());
+
+            // Assert
+            Assert.Equal(obj1.Id, list[0].Id);
+            Assert.Equal(obj1.Id, list[1].Id);
         }
     }
 }
