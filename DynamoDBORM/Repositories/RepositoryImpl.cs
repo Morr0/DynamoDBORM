@@ -42,5 +42,15 @@ namespace DynamoDBORM.Repositories
             
             return dict;
         }
+
+        public async Task<List<Dictionary<string, AttributeValue>>> GetMany<T>(TableProfile profile) where T : new()
+        {
+            var request = new ScanRequest
+            {
+                TableName = profile.TableName
+            };
+
+            return (await _client.ScanAsync(request).ConfigureAwait(false)).Items;
+        }
     }
 }

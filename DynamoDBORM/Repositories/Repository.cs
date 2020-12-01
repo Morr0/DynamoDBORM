@@ -35,6 +35,21 @@ namespace DynamoDBORM.Repositories
             return _conversionManager.From<T>(dict);
         }
 
+        public async Task<IEnumerable<T>> GetMany<T>() where T : new()
+        {
+            var profile = ThrowIfTypeNotHere<T>();
+
+            var listOfDicts = await _impl.GetMany<T>(profile).ConfigureAwait(false);
+            var list = new List<T>(listOfDicts.Count);
+            foreach (var dict in listOfDicts)
+            {
+                var model = _conversionManager.From<T>(dict);
+                list.Add(model);
+            }
+
+            return list;
+        }
+
         private TableProfile ThrowIfTypeNotHere<T>() where T : new()
         {
             if (!_profiles.ContainsKey(typeof(T))) throw new TypeWasNotDeclaredException();
