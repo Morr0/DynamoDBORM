@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
@@ -27,18 +28,17 @@ namespace DynamoDBORM.Repositories
                     ref partitionKeyValue, ref sortKeyValue)
             };
 
-            return (await _client.GetItemAsync(request).ConfigureAwait(false)).Item;
+            return (await _client.GetItemAsync(request, CancellationToken.None).ConfigureAwait(false)).Item;
         }
 
         private Dictionary<string, AttributeValue> Key<T>(string partitionKeyName, string sortKeyName, 
             ref object partitionKey, ref object sortKey)
         {
             var dict = new Dictionary<string, AttributeValue>();
-            var type = typeof(T);
-            
-            dict.Add(partitionKeyName, _manager.ToAttVal[type](partitionKey));
-            if (!string.IsNullOrEmpty(partitionKeyName))
-                dict.Add(sortKeyName, _manager.ToAttVal[type](sortKey));
+
+            dict.Add(partitionKeyName, _manager.ToAttVal[partitionKey.GetType()](partitionKey));
+            if (!string.IsNullOrEmpty(sortKeyName))
+                dict.Add(sortKeyName, _manager.ToAttVal[sortKey.GetType()](sortKey));
             
             return dict;
         }
@@ -50,7 +50,7 @@ namespace DynamoDBORM.Repositories
                 TableName = profile.TableName
             };
 
-            return (await _client.ScanAsync(request).ConfigureAwait(false)).Items;
+            return (await _client.ScanAsync(request, CancellationToken.None).ConfigureAwait(false)).Items;
         }
     }
 }

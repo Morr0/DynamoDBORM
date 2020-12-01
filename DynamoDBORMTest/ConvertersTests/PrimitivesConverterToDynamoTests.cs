@@ -1,5 +1,6 @@
 ﻿using System;
 using DynamoDBORM.Converters;
+using DynamoDBORM.Converters.Internals;
 using DynamoDBORM.Exceptions.Converters;
 using DynamoDBORMTest.ConvertersTests.DummyClasses;
 using Xunit;
@@ -9,6 +10,12 @@ namespace DynamoDBORMTest.ConvertersTests
     public class PrimitivesConverterToDynamoTests
     {
         private ConversionManager _sut = new ConversionManager();
+
+        [Fact]
+        public void To()
+        {
+            Assert.Equal(ToDynamoDB.To, _sut.ToAttVal);
+        }
         
         [Fact]
         public void ShouldThrowNullWhenConvertingAndPartitionKeyIsNull()

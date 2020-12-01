@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Amazon.DynamoDBv2.Model;
 
+[assembly: InternalsVisibleTo("DynamoDBORMTest")]
 namespace DynamoDBORM.Converters.Internals
 {
     internal static class FromDynamoDB

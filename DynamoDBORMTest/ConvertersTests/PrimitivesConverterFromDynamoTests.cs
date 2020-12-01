@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters;
+using DynamoDBORM.Converters.Internals;
 using DynamoDBORM.Exceptions.Converters;
 using DynamoDBORMTest.ConvertersTests.DummyClasses;
 using Xunit;
@@ -11,6 +12,12 @@ namespace DynamoDBORMTest.ConvertersTests
     public class PrimitivesConverterFromDynamoTests
     {
         private ConversionManager _sut = new ConversionManager();
+
+        [Fact]
+        public void From()
+        {
+            Assert.Equal(FromDynamoDB.From, _sut.FromAttVal);
+        }
 
         [Fact]
         public void FromDynamoDBToSimpleTableModel()

@@ -1,5 +1,6 @@
-﻿using DynamoDBORM.Attributes;
+﻿using System.Runtime.CompilerServices;
 
+[assembly: InternalsVisibleTo("DynamoDBORMTest")]
 namespace DynamoDBORM.Repositories
 {
     internal class TableProfile
