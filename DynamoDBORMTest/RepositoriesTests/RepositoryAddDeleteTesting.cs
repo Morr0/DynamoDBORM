@@ -36,5 +36,20 @@ namespace DynamoDBORMTest.RepositoriesTests
 
             // Assert: OK if reached here
         }
+
+        [Fact]
+        public async Task ShouldDeleteInDynamoDB()
+        {
+            // Arrange
+            string id = "k";
+            _dynamoDBClient.Setup(x =>
+                    x.DeleteItemAsync(It.IsAny<DeleteItemRequest>(), CancellationToken.None))
+                .ReturnsAsync(It.IsAny<DeleteItemResponse>());
+
+            // Act
+            await _sut.Remove<Basic>(id);
+
+            // Assert: OK if reached here
+        }
     }
 }

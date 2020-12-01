@@ -61,5 +61,16 @@ namespace DynamoDBORM.Repositories
                 Item = _manager.To(obj)
             };
         }
+
+        public Task Remove<T>(TableProfile profile, object partitionKey, object sortKey) where T : new()
+        {
+            var request = new DeleteItemRequest
+            {
+                TableName = profile.TableName,
+                Key = Key<T>(profile.PartitionKeyName, profile.SortKeyName, ref partitionKey, ref sortKey)
+            };
+
+            return _client.DeleteItemAsync(request, CancellationToken.None);
+        }
     }
 }

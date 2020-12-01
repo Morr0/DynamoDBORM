@@ -9,5 +9,6 @@ namespace DynamoDBORM.Repositories
         Task<IEnumerable<T>> GetMany<T>() where T : new();
 
         Task Add<T>(T obj) where T : new();
+        Task Remove<T>(object partitionKey, object sortKey = null) where T : new();
     }
 }
