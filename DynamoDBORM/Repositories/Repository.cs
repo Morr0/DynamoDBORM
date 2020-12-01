@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
-using DynamoDBORM.Attributes;
 using DynamoDBORM.Converters;
 using DynamoDBORM.Exceptions;
 
@@ -48,6 +45,13 @@ namespace DynamoDBORM.Repositories
             }
 
             return list;
+        }
+
+        public Task Add<T>(T obj) where T : new()
+        {
+            var profile = ThrowIfTypeNotHere<T>();
+
+            return _impl.Add<T>(profile, obj);
         }
 
         private TableProfile ThrowIfTypeNotHere<T>() where T : new()

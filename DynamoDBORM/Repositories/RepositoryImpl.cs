@@ -52,5 +52,14 @@ namespace DynamoDBORM.Repositories
 
             return (await _client.ScanAsync(request, CancellationToken.None).ConfigureAwait(false)).Items;
         }
+
+        public async Task Add<T>(TableProfile profile, T obj) where T : new()
+        {
+            var request = new PutItemRequest
+            {
+                TableName = profile.TableName,
+                Item = _manager.To(obj)
+            };
+        }
     }
 }
