@@ -2,8 +2,8 @@
 
 namespace DynamoDBORM.Attributes
 {
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
-    public class TableAttribute : BaseAttribute
+    [AttributeUsage(AttributeTargets.Class)]
+    public class TableAttribute : AttributeNameAttribute
     {
         /// <summary>
         /// Is required as per DynamoDB specifications. Name of property.
