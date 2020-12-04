@@ -61,6 +61,13 @@ namespace DynamoDBORM.Repositories
             return _impl.Remove<T>(profile, partitionKey, sortKey);
         }
 
+        public Task Update<T>(T obj) where T : new()
+        {
+            var profile = ThrowIfTypeNotHere<T>();
+
+            return _impl.Update<T>(profile, obj);
+        }
+
         private TableProfile ThrowIfTypeNotHere<T>() where T : new()
         {
             if (!_profiles.ContainsKey(typeof(T))) throw new TypeWasNotDeclaredException();
