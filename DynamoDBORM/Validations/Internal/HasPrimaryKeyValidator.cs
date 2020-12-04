@@ -31,12 +31,18 @@ namespace DynamoDBORM.Validations.Internal
         private void EnsureSinglePartitionKey(ref Dictionary<Type, AttributeInfo> attributeInfos)
         {
             if (!attributeInfos.ContainsKey(typeof(PartitionKeyAttribute))) throw new NoPartitionKeyException();
-            // TODO handle multiples
+
+            var info = attributeInfos[typeof(PartitionKeyAttribute)];
+            if (info.Count > 1) throw new MultiplePartitionKeysException();
         }
 
         private void IfHasSortKeyEnsureASingle(ref Dictionary<Type, AttributeInfo> attributesInfo)
         {
-            // TODO handle multiples
+            if (attributesInfo.ContainsKey(typeof(SortKeyAttribute)))
+            {
+                var info = attributesInfo[typeof(SortKeyAttribute)];
+                if (info.Count > 1) throw new MultipleSortKeysException();
+            }
         }
     }
 }

@@ -58,5 +58,27 @@ namespace DynamoDBORMTest.ValidationTests
             Assert.Throws<PrimaryKeyShouldBeWithoutAttributeNamedAttributeException>(action);
         }
 
+        [Fact]
+        public void ShouldHaveSinglePartitionKey()
+        {
+            Action action = () => _sut.Validate(new[]
+            {
+                typeof(MultiplePartitionKeys)
+            });
+
+            Assert.Throws<MultiplePartitionKeysException>(action);
+        }
+
+        [Fact]
+        public void ShouldHaveSingleSortKeyIfDefined()
+        {
+            Action action = () => _sut.Validate(new[]
+            {
+                typeof(MultipleSortKey)
+            });
+
+            Assert.Throws<MultipleSortKeysException>(action);
+        }
+
     }
 }
