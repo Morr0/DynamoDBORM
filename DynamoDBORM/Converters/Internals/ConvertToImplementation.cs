@@ -19,38 +19,23 @@ namespace DynamoDBORM.Converters.Internals
         {
             var dict = new Dictionary<string, AttributeValue>();
 
-            var tableAttribute = table.GetType().GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
-            string partitionKeyName = tableAttribute.PartitionKey;
-            string sortKeyName = tableAttribute.SortKey;
-
             var props = table.GetType().GetProperties();
-            foreach (var prop in props)
+            foreach (var prop in typeof(T).GetProperties())
             {
-                var attributes = prop.GetCustomAttributes();
-                bool hasUnmap = false;
-                bool doNotWriteIfNull = false;
+                if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
+                
                 string propName = prop.Name;
-                foreach (var attribute in attributes)
-                {
-                    if (attribute is UnmappedAttribute)
-                    {
-                        hasUnmap = true;
-                        break;
-                    }  else if (attribute is AttributeNameAttribute)
-                    {
-                        propName = (attribute as AttributeNameAttribute).Name;
-                    }
-                }
+                var partitionKeyAttribute = prop.GetCustomAttribute<PartitionKeyAttribute>();
+                var sortKeyAttribute = prop.GetCustomAttribute<SortKeyAttribute>();
 
-                if (hasUnmap) continue;
-
-                if (propName == partitionKeyName && prop.GetValue(table) is null)
-                    throw new NullPrimaryKeyException(ConversionExceptionReason.NullPartitionKey);
-                else if (propName == sortKeyName && prop.GetValue(table) is null)
-                    throw new NullPrimaryKeyException(ConversionExceptionReason.NullSortKey);
-                else if (doNotWriteIfNull)
+                if (partitionKeyAttribute is not null)
                 {
-                    if (prop.GetValue(table) is null) continue;
+                    propName = partitionKeyAttribute.Name;
+                    if (prop.GetValue(table) is null) throw new NullPrimaryKeyException(ConversionExceptionReason.NullPartitionKey);
+                } else if (sortKeyAttribute is not null)
+                {
+                    propName = sortKeyAttribute.Name;
+                    if (prop.GetValue(table) is null) throw new NullPrimaryKeyException(ConversionExceptionReason.NullSortKey);
                 }
 
                 dict.Add(propName, GetAttribute(prop, table));
@@ -67,9 +52,7 @@ namespace DynamoDBORM.Converters.Internals
                 attributeValue = converter.ProcessTo(prop, prop.GetValue(table));
                 if (attributeValue is not null) break;
             }
-
-            if (attributeValue is null) throw new UnsupportedTypeException(prop.PropertyType);
-
+            
             return attributeValue;
         }
     }

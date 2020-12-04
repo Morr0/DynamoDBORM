@@ -1,33 +1,17 @@
-﻿namespace DynamoDBORM.Validations
+﻿using System;
+using System.Collections.Generic;
+using DynamoDBORM.Attributes;
+
+namespace DynamoDBORM.Validations
 {
     public abstract class BaseValidator
     {
         // Template method
-        protected virtual void Validate<T>(T table) where T : new()
-        {
-            
-        }
+        protected abstract void Validate(ref object model,ref ISet<Type> attributes);
 
-        public void ProcessValidation<T>(T table) where T : new()
+        public void ProcessValidation(ref object model, ref ISet<Type> attributes)
         {
-            Validate(table);
-        }
-
-        protected bool HasPropertyNamed<T>(T table, string propName) where T : new()
-        {
-            var props = table.GetType().GetProperties();
-            bool hasPropWithThatName = false;
-            
-            foreach (var prop in props)
-            {
-                if (prop.Name == propName)
-                {
-                    hasPropWithThatName = true;
-                    break;
-                }
-            }
-
-            return hasPropWithThatName;
+            Validate(ref model, ref attributes);
         }
     }
 }

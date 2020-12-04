@@ -1,17 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using DynamoDBORM.Exceptions;
+using System.Reflection;
+using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions.Validations;
 
 namespace DynamoDBORM.Validations
 {
     public class ValidationsPipeline
     {
-        private IEnumerable<BaseValidator> _validators;
+        private ISet<Type> _attributes;
+        private readonly IEnumerable<BaseValidator> _validators;
 
         public ValidationsPipeline(IEnumerable<BaseValidator> validators)
         {
+            PopulateBaseAttributes();
             _validators = validators;
+        }
+
+        private void PopulateBaseAttributes()
+        {
+            _attributes = new HashSet<Type>
+            {
+                typeof(AttributeNameAttribute),
+                typeof(PartitionKeyAttribute),
+                typeof(SortKeyAttribute),
+                typeof(TableAttribute),
+                typeof(UnmappedAttribute)
+            };
         }
 
         public void Validate(IEnumerable<Type> tablesTypes)
@@ -24,7 +39,7 @@ namespace DynamoDBORM.Validations
                 
                 foreach (var validator in _validators)
                 {
-                    validator.ProcessValidation(obj);
+                    validator.ProcessValidation(ref obj, ref _attributes);
                 }
             }
         }

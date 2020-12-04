@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Reflection;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Repositories;
 
@@ -9,55 +8,27 @@ namespace DynamoDBORM.Utilities
     {
         public static TableProfile Get(Type type)
         {
-            // TODO clean this mess
-            TableAttribute tableAttribute = null;
-            var attrs = type.GetCustomAttributes();
-            foreach (var attr in attrs)
+            var dict = TableModelUtil.GetAttributesForTypeToTableProfile(ref type);
+
+            string tableName = type.Name;
+            if (dict.ContainsKey(typeof(TableAttribute)))
             {
-                if (attr is TableAttribute)
-                {
-                    tableAttribute = attr as TableAttribute;
-                    break;
-                }
+                var tableAttribute = dict[typeof(TableAttribute)].Attribute as TableAttribute;
+                if (!string.IsNullOrEmpty(tableAttribute?.Name)) tableName = tableAttribute.Name;
             }
 
-            string partitionKeyDbName = tableAttribute.PartitionKey;
-            bool hasSortKey = !string.IsNullOrEmpty(tableAttribute.SortKey);
-            string sortKeyDbName = tableAttribute.SortKey;
+            string partitionKeyName = null;
+            var partitionKeyAttribute = dict[typeof(PartitionKeyAttribute)].Attribute as PartitionKeyAttribute;
+            if (!string.IsNullOrEmpty(partitionKeyAttribute.Name)) partitionKeyName = partitionKeyAttribute.Name;
 
-            var props = type.GetProperties();
-            foreach (var prop in props)
+            string sortKeyName = null;
+            if (dict.ContainsKey(typeof(SortKeyAttribute)))
             {
-                if (prop.Name == partitionKeyDbName)
-                {
-                    var propAttrs = prop.GetCustomAttributes();
-                    foreach (var propAttr in propAttrs)
-                    {
-                        if (propAttr is AttributeNameAttribute)
-                        {
-                            string name = (propAttr as AttributeNameAttribute).Name;
-                            if (!string.IsNullOrEmpty(name)) partitionKeyDbName = name;
-                        }
-                    }
-                } else if (hasSortKey && prop.Name == sortKeyDbName)
-                {
-                    var propAttrs = prop.GetCustomAttributes();
-                    foreach (var propAttr in propAttrs)
-                    {
-                        if (propAttr is AttributeNameAttribute)
-                        {
-                            string name = (propAttr as AttributeNameAttribute).Name;
-                            if (!string.IsNullOrEmpty(name)) sortKeyDbName = name;
-                        }
-                    }
-                }
+                var sortKeyAttribute = dict[typeof(SortKeyAttribute)].Attribute as SortKeyAttribute;
+                if (!string.IsNullOrEmpty(sortKeyAttribute.Name)) sortKeyName = sortKeyAttribute.Name;
             }
-
-            string tableName = !string.IsNullOrEmpty(tableAttribute?.Name) 
-                ? tableAttribute.Name 
-                : type.Name;
             
-            return new TableProfile(tableName, partitionKeyDbName, sortKeyDbName);
+            return new TableProfile(tableName, partitionKeyName, sortKeyName);
         }
     }
 }
