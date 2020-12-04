@@ -25,7 +25,7 @@ namespace DynamoDBORMTest.RepositoriesTests
         {
             // Arrange
             _dynamoDBClient.Setup(x => 
-                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None))
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(new UpdateItemResponse());
             
             // Act

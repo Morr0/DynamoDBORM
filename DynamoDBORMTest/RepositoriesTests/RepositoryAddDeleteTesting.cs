@@ -34,7 +34,9 @@ namespace DynamoDBORMTest.RepositoriesTests
                 Id = "kfk"
             });
 
-            // Assert: OK if reached here
+            // Assert
+            _dynamoDBClient.Verify(x => x.PutItemAsync(It.IsAny<PutItemRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+
         }
 
         [Fact]
@@ -49,7 +51,9 @@ namespace DynamoDBORMTest.RepositoriesTests
             // Act
             await _sut.Remove<Basic>(id);
 
-            // Assert: OK if reached here
+            // Assert
+            _dynamoDBClient.Verify(x => x.DeleteItemAsync(It.IsAny<DeleteItemRequest>(), It.IsAny<CancellationToken>()), Times.Once);
+
         }
     }
 }

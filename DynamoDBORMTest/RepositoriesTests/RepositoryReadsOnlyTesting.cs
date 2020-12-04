@@ -32,13 +32,14 @@ namespace DynamoDBORMTest.RepositoriesTests
             };
             
             _dynamoDBClient.Setup(x => 
-                    x.GetItemAsync(It.IsAny<GetItemRequest>(), CancellationToken.None))
+                    x.GetItemAsync(It.IsAny<GetItemRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(Basic.DynamoGetItemResponse(id));
 
             // Act
             var response = await _sut.Get<Basic>(id);
             
             // Assert
+            _dynamoDBClient.Verify(x => x.GetItemAsync(It.IsAny<GetItemRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.Equal(obj.Id, response.Id);
         }
 
@@ -70,6 +71,7 @@ namespace DynamoDBORMTest.RepositoriesTests
             var list = new List<Basic>(await _sut.GetMany<Basic>());
 
             // Assert
+            _dynamoDBClient.Verify(x => x.ScanAsync(It.IsAny<ScanRequest>(), It.IsAny<CancellationToken>()), Times.Once);
             Assert.Equal(obj1.Id, list[0].Id);
             Assert.Equal(obj1.Id, list[1].Id);
         }
