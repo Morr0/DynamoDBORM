@@ -23,38 +23,41 @@ namespace DynamoDBORM.Converters.Internals
             foreach (var prop in props)
             {
                 if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
-                
-                string propName = prop.Name;
-                
-                var unmappedAttribute = prop.GetCustomAttribute<UnmappedAttribute>();
-                if (unmappedAttribute is not null) continue;
-                if (!attrsValues.ContainsKey(propName)) continue;
-                
-                var partitionKeyAttribute = prop.GetCustomAttribute<PartitionKeyAttribute>();
-                var sortKeyAttribute = prop.GetCustomAttribute<SortKeyAttribute>();
-                var attributeNameAttribute = prop.GetCustomAttribute<AttributeNameAttribute>();
-                
-                if (attributeNameAttribute is not null && !string.IsNullOrEmpty(attributeNameAttribute.Name))
+
+                string propName = GetPropNameAsPerAttributes(prop, out bool byAttribute);
+
+                if (!attrsValues.ContainsKey(propName))
                 {
-                    propName = attributeNameAttribute.Name;
-                }
-                else if (partitionKeyAttribute is not null && !string.IsNullOrEmpty(partitionKeyAttribute.Name))
-                {
-                    propName = partitionKeyAttribute.Name;
-                    if (prop.Name == partitionKeyAttribute.Name && !attrsValues.ContainsKey(propName))
-                        throw new NullPartitionKeyException();
-                } else if (sortKeyAttribute is not null && !string.IsNullOrEmpty(sortKeyAttribute.Name))
-                {
-                    propName = sortKeyAttribute.Name;
-                    if (prop.Name == sortKeyAttribute.Name && !string.IsNullOrEmpty(sortKeyAttribute.Name) &&
-                        !attrsValues.ContainsKey(propName))
-                        throw new NullSortKeyException();
+                    if (byAttribute) throw new PrimaryKeyInModelNonExistentInDynamoDBException(ConversionExceptionReason.Unspecified);
+                    continue;
                 }
 
-                SetValue(prop, obj, attrsValues[prop.Name]);
+                SetValue(prop, obj, attrsValues[propName]);
             }
 
             return obj;
+        }
+
+        private string GetPropNameAsPerAttributes(PropertyInfo prop, out bool primaryKey)
+        {
+            PartitionKeyAttribute partitionKeyAttribute = null;
+            SortKeyAttribute sortKeyAttribute = null;
+            AttributeNameAttribute attributeNameAttribute = null;
+
+            foreach (var attribute in prop.GetCustomAttributes())
+            {
+                if (attribute is PartitionKeyAttribute) partitionKeyAttribute = attribute as PartitionKeyAttribute;
+                else if (attribute is SortKeyAttribute) sortKeyAttribute = attribute as SortKeyAttribute;
+                else if (attribute is AttributeNameAttribute) attributeNameAttribute = attribute as AttributeNameAttribute;
+            }
+
+            primaryKey = partitionKeyAttribute is not null || sortKeyAttribute is not null;
+
+            if (partitionKeyAttribute is not null && !string.IsNullOrEmpty(partitionKeyAttribute.Name)) return partitionKeyAttribute.Name;
+            if (sortKeyAttribute is not null && !string.IsNullOrEmpty(sortKeyAttribute.Name)) return sortKeyAttribute.Name;
+            if (attributeNameAttribute is not null && !string.IsNullOrEmpty(attributeNameAttribute.Name)) return attributeNameAttribute.Name;
+            
+            return prop.Name;
         }
 
         private void SetValue<T>(PropertyInfo prop, T obj, AttributeValue attributeValue)

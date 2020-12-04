@@ -16,11 +16,9 @@ namespace DynamoDBORM.Utilities
                 var tableAttribute = dict[typeof(TableAttribute)].Attribute as TableAttribute;
                 if (!string.IsNullOrEmpty(tableAttribute?.Name)) tableName = tableAttribute.Name;
             }
-
-            string partitionKeyName = null;
-            var partitionKeyAttribute = dict[typeof(PartitionKeyAttribute)].Attribute as PartitionKeyAttribute;
-            if (!string.IsNullOrEmpty(partitionKeyAttribute.Name)) partitionKeyName = partitionKeyAttribute.Name;
-
+            
+            string partitionKeyName = (dict[typeof(PartitionKeyAttribute)].Attribute as PartitionKeyAttribute)?.Name;
+            
             string sortKeyName = null;
             if (dict.ContainsKey(typeof(SortKeyAttribute)))
             {

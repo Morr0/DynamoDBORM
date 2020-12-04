@@ -11,7 +11,7 @@ namespace DynamoDBORM.Repositories
     {
         private readonly ConversionManager _conversionManager;
         private readonly AmazonDynamoDBClient _client;
-        private Dictionary<Type, TableProfile> _profiles;
+        private readonly Dictionary<Type, TableProfile> _profiles;
         private readonly RepositoryImpl _impl;
 
         internal Repository(ConversionManager conversionManager, AmazonDynamoDBClient client, 

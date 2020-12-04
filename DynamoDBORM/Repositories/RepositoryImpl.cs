@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -27,14 +28,14 @@ namespace DynamoDBORM.Repositories
             var request = new GetItemRequest
             {
                 TableName = profile.TableName,
-                Key = Key<T>(profile.PartitionKeyName, profile.SortKeyName, 
+                Key = Key(profile.PartitionKeyName, profile.SortKeyName, 
                     ref partitionKeyValue, ref sortKeyValue)
             };
 
             return (await _client.GetItemAsync(request, CancellationToken.None).ConfigureAwait(false)).Item;
         }
 
-        private Dictionary<string, AttributeValue> Key<T>(string partitionKeyName, string sortKeyName, 
+        private Dictionary<string, AttributeValue> Key(string partitionKeyName, string sortKeyName, 
             ref object partitionKey, ref object sortKey)
         {
             var dict = new Dictionary<string, AttributeValue>();
@@ -72,7 +73,7 @@ namespace DynamoDBORM.Repositories
             var request = new DeleteItemRequest
             {
                 TableName = profile.TableName,
-                Key = Key<T>(profile.PartitionKeyName, profile.SortKeyName, ref partitionKey, ref sortKey)
+                Key = Key(profile.PartitionKeyName, profile.SortKeyName, ref partitionKey, ref sortKey)
             };
 
             return _client.DeleteItemAsync(request, CancellationToken.None);
@@ -128,7 +129,7 @@ namespace DynamoDBORM.Repositories
             object partitionKeyValue = type.GetProperty(partitionKeyName);
             object sortKeyValue = type.GetProperty(sortKeyName);
 
-            return Key<T>(partitionKeyName, sortKeyName, ref partitionKeyValue, ref sortKeyValue);
+            return Key(partitionKeyName, sortKeyName, ref partitionKeyValue, ref sortKeyValue);
         }
     }
 }

@@ -35,6 +35,11 @@ namespace DynamoDBORM.Utilities
                         {
                             if (!dict.ContainsKey(att.GetType())) dict.Add(att.GetType(), new AttributeInfo(att));
                             else dict[att.GetType()].Count++;
+
+                            if (att is AttributeNameAttribute nameAttribute)
+                                nameAttribute.Name = !string.IsNullOrEmpty(nameAttribute.Name)
+                                    ? nameAttribute.Name
+                                    : prop.Name;
                         }
                     }
                 }
