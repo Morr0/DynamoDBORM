@@ -81,46 +81,6 @@ namespace DynamoDBORMTest.ConvertersTests
         }
 
         [Fact]
-        public void ShouldDoNotWriteWhenNullAttributeNotApplyToPartitionKey()
-        {
-            var obj = new ShouldNotWriteAppliedToPartitionKey
-            {
-                Id = "f"
-            };
-
-            var attrs = _sut.To(obj);
-            
-            Assert.Single(attrs);
-        }
-        
-        [Fact]
-        public void ShouldDoNotWriteWhenNullAttributeNotApplyToADefinedSortKey()
-        {
-            var obj = new ShouldNotWriteAppliedToSortKey
-            {
-                Partition = "f",
-                Sort = "fjjf"
-            };
-
-            var attrs = _sut.To(obj);
-            
-            Assert.Equal(2, attrs.Count);
-        }
-
-        [Fact]
-        public void ShouldNotWriteANullProperty()
-        {
-            var obj = new ShouldNotWriteAppliedOnOneProp
-            {
-                Id = "f"
-            };
-
-            var attrs = _sut.To(obj);
-            
-            Assert.Single(attrs);
-        }
-
-        [Fact]
         public void ShouldThrowUnsupportedTypeExceptionOnANonPrimitiveType()
         {
             var obj = new UnsupportedTypeExists

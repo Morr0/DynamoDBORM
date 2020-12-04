@@ -36,10 +36,7 @@ namespace DynamoDBORM.Converters.Internals
                     {
                         hasUnmap = true;
                         break;
-                    } else if (attribute is DoNotWriteWhenNullAttribute)
-                    {
-                        doNotWriteIfNull = true;
-                    } else if (attribute is AttributeNameAttribute)
+                    }  else if (attribute is AttributeNameAttribute)
                     {
                         propName = (attribute as AttributeNameAttribute).Name;
                     }

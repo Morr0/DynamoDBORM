@@ -27,30 +27,6 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
     }
 
     [Table(PartitionKey = nameof(Id))]
-    public class ShouldNotWriteAppliedToPartitionKey
-    {
-        [DoNotWriteWhenNull]
-        public string Id { get; set; }
-    }
-
-    [Table(PartitionKey = nameof(Partition), SortKey = nameof(Sort))]
-    public class ShouldNotWriteAppliedToSortKey
-    {
-        public string Partition { get; set; }
-        [DoNotWriteWhenNull]
-        public string Sort { get; set; }
-    }
-
-    [Table(PartitionKey = nameof(Id))]
-    public class ShouldNotWriteAppliedOnOneProp
-    {
-        public string Id { get; set; }
-
-        [DoNotWriteWhenNull]
-        public string Null { get; set; }
-    }
-
-    [Table(PartitionKey = nameof(Id))]
     public class UnsupportedTypeExists
     {
         public string Id { get; set; }
