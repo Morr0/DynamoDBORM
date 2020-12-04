@@ -36,5 +36,27 @@ namespace DynamoDBORMTest.ValidationTests
             });
         }
 
+        [Fact]
+        public void PartitionKeyAttributeShouldNotBeWithAttributeNamedAttribute()
+        {
+            Action action = () => _sut.Validate(new[]
+            {
+                typeof(PartitionKeyAttributesShouldNotBeWithAttributeNamedAttribute)
+            });
+
+            Assert.Throws<PrimaryKeyShouldBeWithoutAttributeNamedAttributeException>(action);
+        }
+
+        [Fact]
+        public void SortKeyShouldNotBeWithAttributeNamedAttribute()
+        {
+            Action action = () => _sut.Validate(new[]
+            {
+                typeof(PrimaryKeyAttributesShouldNotBeWithAttributeNamedAttribute)
+            });
+
+            Assert.Throws<PrimaryKeyShouldBeWithoutAttributeNamedAttributeException>(action);
+        }
+
     }
 }

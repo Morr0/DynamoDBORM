@@ -19,7 +19,7 @@ namespace DynamoDBORM.Utilities
 
             return GetAttributes(ref type, ref atts);
         }
-        
+
         public static Dictionary<Type, AttributeInfo> GetAttributes(ref Type type, ref ISet<Type> attributes)
         {
             var dict = new Dictionary<Type, AttributeInfo>();

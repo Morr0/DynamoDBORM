@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions.Validations;
 
@@ -36,7 +35,6 @@ namespace DynamoDBORM.Validations
                 if (HasNotParameterlessConstructor(type)) throw new NoPublicParameterlessConstructorException();
 
                 var obj = Activator.CreateInstance(type);
-                
                 foreach (var validator in _validators)
                 {
                     validator.ProcessValidation(ref obj, ref _attributes);

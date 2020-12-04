@@ -18,6 +18,14 @@ namespace DynamoDBORM.Validations.Internal
             var attributesInfo = TableModelUtil.GetAttributes(ref type, ref attributes);
             EnsureSinglePartitionKey(ref attributesInfo);
             IfHasSortKeyEnsureASingle(ref attributesInfo);
+            EnsurePrimaryKeysDontHaveAttributeNameAttribute(ref attributesInfo);
+        }
+
+        private void EnsurePrimaryKeysDontHaveAttributeNameAttribute(ref Dictionary<Type, AttributeInfo> dict)
+        {
+            if ((dict.ContainsKey(typeof(PartitionKeyAttribute)) || dict.ContainsKey(typeof(SortKeyAttribute)))
+                || dict.ContainsKey(typeof(AttributeNameAttribute)))
+                throw new PrimaryKeyShouldBeWithoutAttributeNamedAttributeException();
         }
 
         private void EnsureSinglePartitionKey(ref Dictionary<Type, AttributeInfo> attributeInfos)
