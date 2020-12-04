@@ -20,7 +20,6 @@ namespace DynamoDBORMTest.ValidationTests.DummyClasses
     }
     public class TableWithOnlyPartitionKeyButNotDefinedAsProperty
     {
-        [PartitionKey(Name = "hello")]
         public string Id { get; set; }
     }
 

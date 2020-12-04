@@ -19,40 +19,45 @@ namespace DynamoDBORM.Converters.Internals
         {
             T obj = new T();
             
-            var tableAttribute = typeof(T).GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
-
             var props = typeof(T).GetProperties();
             foreach (var prop in props)
             {
+                if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
+                
                 string propName = prop.Name;
                 
-                bool hasUnMapAttribute = false;
-                var attributes = prop.GetCustomAttributes();
-                foreach (var attribute in attributes)
+                var unmappedAttribute = prop.GetCustomAttribute<UnmappedAttribute>();
+                if (unmappedAttribute is not null) continue;
+                if (!attrsValues.ContainsKey(propName)) continue;
+                
+                var partitionKeyAttribute = prop.GetCustomAttribute<PartitionKeyAttribute>();
+                var sortKeyAttribute = prop.GetCustomAttribute<SortKeyAttribute>();
+                var attributeNameAttribute = prop.GetCustomAttribute<AttributeNameAttribute>();
+                
+                if (attributeNameAttribute is not null && !string.IsNullOrEmpty(attributeNameAttribute.Name))
                 {
-                    if (attribute is UnmappedAttribute)
-                    {
-                        hasUnMapAttribute = true;
-                        break;
-                    }
-                    
-                    if (attribute is AttributeNameAttribute nameAttribute)
-                    {
-                        propName = nameAttribute?.Name;
-                    }
+                    propName = attributeNameAttribute.Name;
+                }
+                else if (partitionKeyAttribute is not null && !string.IsNullOrEmpty(partitionKeyAttribute.Name))
+                {
+                    propName = partitionKeyAttribute.Name;
+                    if (prop.Name == partitionKeyAttribute.Name && !attrsValues.ContainsKey(propName))
+                        throw new NullPartitionKeyException();
+                } else if (sortKeyAttribute is not null && !string.IsNullOrEmpty(sortKeyAttribute.Name))
+                {
+                    propName = sortKeyAttribute.Name;
+                    if (prop.Name == sortKeyAttribute.Name && !string.IsNullOrEmpty(sortKeyAttribute.Name) &&
+                        !attrsValues.ContainsKey(propName))
+                        throw new NullSortKeyException();
                 }
 
-                if (hasUnMapAttribute) continue;
-                
-                if (!attrsValues.ContainsKey(propName)) continue;
-
-                SetValue(prop, obj, attrsValues[propName]);
+                SetValue(prop, obj, attrsValues[prop.Name]);
             }
 
             return obj;
         }
 
-        private void SetValue<T>(PropertyInfo prop, T obj, AttributeValue attributeValue) where T : new()
+        private void SetValue<T>(PropertyInfo prop, T obj, AttributeValue attributeValue)
         {
             object propValue = null;
             foreach (var converter in _converters)

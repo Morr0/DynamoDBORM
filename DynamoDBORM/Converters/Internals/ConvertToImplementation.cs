@@ -19,7 +19,6 @@ namespace DynamoDBORM.Converters.Internals
         {
             var dict = new Dictionary<string, AttributeValue>();
 
-            var props = table.GetType().GetProperties();
             foreach (var prop in typeof(T).GetProperties())
             {
                 if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
@@ -27,15 +26,22 @@ namespace DynamoDBORM.Converters.Internals
                 string propName = prop.Name;
                 var partitionKeyAttribute = prop.GetCustomAttribute<PartitionKeyAttribute>();
                 var sortKeyAttribute = prop.GetCustomAttribute<SortKeyAttribute>();
+                var attributeNameAttribute = prop.GetCustomAttribute<AttributeNameAttribute>();
 
                 if (partitionKeyAttribute is not null)
                 {
-                    propName = partitionKeyAttribute.Name;
-                    if (prop.GetValue(table) is null) throw new NullPrimaryKeyException(ConversionExceptionReason.NullPartitionKey);
+                    propName = !string.IsNullOrEmpty(partitionKeyAttribute.Name) ? partitionKeyAttribute.Name : propName;
+                    if (prop.GetValue(table) is null) throw new NullPartitionKeyException();
                 } else if (sortKeyAttribute is not null)
                 {
-                    propName = sortKeyAttribute.Name;
-                    if (prop.GetValue(table) is null) throw new NullPrimaryKeyException(ConversionExceptionReason.NullSortKey);
+                    propName = !string.IsNullOrEmpty(sortKeyAttribute.Name) ? sortKeyAttribute.Name : propName;
+                    if (prop.GetValue(table) is null) throw new NullSortKeyException();
+                }
+                else if (attributeNameAttribute is not null)
+                {
+                    propName = !string.IsNullOrEmpty(attributeNameAttribute.Name)
+                        ? attributeNameAttribute.Name
+                        : propName;
                 }
 
                 dict.Add(propName, GetAttribute(prop, table));
@@ -52,6 +58,8 @@ namespace DynamoDBORM.Converters.Internals
                 attributeValue = converter.ProcessTo(prop, prop.GetValue(table));
                 if (attributeValue is not null) break;
             }
+            
+            if (attributeValue == null) throw new UnsupportedTypeException(prop.PropertyType);
             
             return attributeValue;
         }

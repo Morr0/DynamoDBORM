@@ -24,8 +24,7 @@ namespace DynamoDBORMTest.ConvertersTests
 
             Action action = () => _sut.To(oneProp);
 
-            var exception = Assert.Throws<NullPrimaryKeyException>(action);
-            Assert.Equal(ConversionExceptionReason.NullPartitionKey, exception.Reason);
+            Assert.Throws<NullPartitionKeyException>(action);
         }
         
         [Fact]
@@ -38,8 +37,7 @@ namespace DynamoDBORMTest.ConvertersTests
 
             Action action = () => _sut.To(composite);
 
-            var exception = Assert.Throws<NullPrimaryKeyException>(action);
-            Assert.Equal(ConversionExceptionReason.NullSortKey, exception.Reason);
+            Assert.Throws<NullSortKeyException>(action);
         }
 
         [Fact]

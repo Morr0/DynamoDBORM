@@ -17,18 +17,6 @@ namespace DynamoDBORMTest.ValidationTests
         });
 
         [Fact]
-        public void ShouldThrowOnEmptyClassWithTableAttribute()
-        {
-            Action action = () => _sut.Validate(new []
-            {
-                typeof(EmptyTable)
-            });
-
-            var exception = Assert.Throws<TableHasNotSpecifiedPartitionKey>(action);
-            Assert.Equal(Reason.SameAsExceptionName, exception.Reason);
-        }
-
-        [Fact]
         public void ShouldThrowDueToNonExistentPartitionKey()
         {
             Action action = () => _sut.Validate(new []
@@ -36,22 +24,9 @@ namespace DynamoDBORMTest.ValidationTests
                 typeof(TableWithOnlyPartitionKeyButNotDefinedAsProperty)
             });
 
-            var exception = Assert.Throws<TableHasNotSpecifiedPartitionKey>(action);
-            Assert.Equal(Reason.ReferencedNonExistentPartitionKey, exception.Reason);
+            Assert.Throws<NoPartitionKeyException>(action);
         }
-        
-        [Fact]
-        public void ShouldThrowDueToNonExistentSortKey()
-        {
-            Action action = () => _sut.Validate(new []
-            {
-                typeof(TableWithBothPartitionAndSortKeysButNotDefinedInProperty)
-            });
 
-            var exception = Assert.Throws<TableHasNotSpecifiedPartitionKey>(action);
-            Assert.Equal(Reason.ReferencedNonExistentSortKey, exception.Reason);
-        }
-        
         [Fact]
         public void ShouldPass()
         {

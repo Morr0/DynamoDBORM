@@ -58,8 +58,7 @@ namespace DynamoDBORMTest.ConvertersTests
 
             Action action = () => _sut.From<OneProp>(dict);
 
-            var exception = Assert.Throws<PrimaryKeyInModelNonExistentInDynamoDBException>(action);
-            Assert.Equal(ConversionExceptionReason.NonExistentPartitionKey, exception.Reason);
+            Assert.Throws<NullPartitionKeyException>(action);
         }
         
         [Fact]
@@ -74,8 +73,7 @@ namespace DynamoDBORMTest.ConvertersTests
 
             Action action = () => _sut.From<CompositePrimaryKeyPropsOnly>(dict);
 
-            var exception = Assert.Throws<PrimaryKeyInModelNonExistentInDynamoDBException>(action);
-            Assert.Equal(ConversionExceptionReason.NonExistentSortKey, exception.Reason);
+            Assert.Throws<NullSortKeyException>(action);
         }
 
         [Fact]
