@@ -2,22 +2,23 @@
 
 namespace DynamoDBORMTest.ConvertersTests.DummyClasses
 {
-    [Table(PartitionKey = nameof(Id))]
     public class OneProp
     {
+        [PartitionKey]
         public string Id { get; set; }
     }
     
-    [Table(PartitionKey = nameof(PartitionKey), SortKey = nameof(SortKey))]
     public class CompositePrimaryKeyPropsOnly
     {
+        [PartitionKey]
         public string PartitionKey { get; set; }
+        [SortKey]
         public string SortKey { get; set; }
     }
     
-    [Table(PartitionKey = nameof(PartitionKey))]
     public class CompositePrimaryKeyPropsWithOneUnmapped
     {
+        [PartitionKey]
         public string PartitionKey { get; set; }
 
         [Unmapped]
@@ -25,10 +26,10 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
         
         public string Mapped { get; set; }
     }
-
-    [Table(PartitionKey = nameof(Id))]
+    
     public class UnsupportedTypeExists
     {
+        [PartitionKey]
         public string Id { get; set; }
 
         public CompoundType Type { get; set; }
@@ -39,9 +40,9 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
         public string Name { get; set; }
     }
 
-    [Table(PartitionKey = nameof(Id))]
     public class DifferentNamedProperty
     {
+        [PartitionKey]
         public string Id { get; set; }
         [AttributeName(Name = SecondName)]
         public string X { get; set; }
@@ -49,21 +50,19 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
         public const string SecondName = "kfdn";
     }
     
-    [Table(PartitionKey = nameof(Id))]
     public class DifferentNamedPartitionKey
     {
-        [AttributeName(Name = IdName)]
+        [PartitionKey(Name = IdName)]
         public string Id { get; set; }
 
         public const string IdName = "ID";
     }
     
-    [Table(PartitionKey = nameof(Partition), SortKey = nameof(Sort))]
     public class DifferentNamedPartitionAndSortKey
     {
-        [AttributeName(Name = PartitionName)]
+        [PartitionKey(Name = PartitionName)]
         public string Partition { get; set; }
-        [AttributeName(Name = SortName)]
+        [SortKey(Name = SortName)]
         public string Sort { get; set; }
         
         public const string PartitionName = "P1";

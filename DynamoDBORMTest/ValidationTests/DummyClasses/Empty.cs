@@ -6,29 +6,27 @@ namespace DynamoDBORMTest.ValidationTests.DummyClasses
     {
         
     }
-
+    
     [Table]
     public class EmptyTable
     {
         
     }
-
-    [Table(PartitionKey = nameof(TableWithOnlyPartitionKey.Id))]
+    
     public class TableWithOnlyPartitionKey
     {
+        [PartitionKey]
         public string Id { get; set; }
     }
-    
-    [Table(PartitionKey = "hello")]
     public class TableWithOnlyPartitionKeyButNotDefinedAsProperty
     {
+        [PartitionKey(Name = "hello")]
         public string Id { get; set; }
     }
 
-    [Table(PartitionKey = nameof(TableWithBothPartitionAndSortKeysButNotDefinedInProperty.Id)
-        , SortKey = "jjj")]
     public class TableWithBothPartitionAndSortKeysButNotDefinedInProperty
     {
+        [PartitionKey]
         public string Id { get; set; }
     }
 }

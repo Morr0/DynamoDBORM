@@ -17,17 +17,6 @@ namespace DynamoDBORMTest.ValidationTests
         });
 
         [Fact]
-        public void ShouldThrowOnClassWithoutTableAttribute()
-        {
-            Action action = () => _sut.Validate(new []
-            {
-                typeof(AbsoluteEmptyClass)
-            });
-
-            Assert.Throws<NoTableAttributeException>(action);
-        }
-        
-        [Fact]
         public void ShouldThrowOnEmptyClassWithTableAttribute()
         {
             Action action = () => _sut.Validate(new []

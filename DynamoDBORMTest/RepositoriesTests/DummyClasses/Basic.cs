@@ -4,9 +4,9 @@ using DynamoDBORM.Attributes;
 
 namespace DynamoDBORMTest.RepositoriesTests.DummyClasses
 {
-    [DynamoDBORM.Attributes.Table(PartitionKey = nameof(Id))]
     public class Basic
     {
+        [PartitionKey]
         public string Id { get; set; }
         
         public static GetItemResponse DynamoGetItemResponse(string id) => new GetItemResponse
