@@ -22,17 +22,5 @@ namespace DynamoDBORM.Converters.Internals
                 { typeof(Guid), value => Guid.Parse(value.S)}
             };
         }
-
-        protected override AttributeValue ConvertTo(PropertyInfo prop, object value)
-        {
-            var map = GetTosMappings();
-            return map.ContainsKey(prop.PropertyType) ? map[prop.PropertyType](value) : null;
-        }
-
-        protected override object ConvertFrom(PropertyInfo prop, AttributeValue attributeValue)
-        {
-            var map = GetFromsMappings();
-            return map.ContainsKey(prop.PropertyType) ? map[prop.PropertyType](attributeValue) : null;
-        }
     }
 }

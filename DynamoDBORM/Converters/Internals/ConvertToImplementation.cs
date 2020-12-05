@@ -8,11 +8,11 @@ namespace DynamoDBORM.Converters.Internals
 {
     internal class ConvertToImplementation
     {
-        private IEnumerable<BaseConverter> _converters;
+        private ConversionManager _manager;
 
-        public ConvertToImplementation(IEnumerable<BaseConverter> converters)
+        public ConvertToImplementation(ConversionManager manager)
         {
-            _converters = converters;
+            _manager = manager;
         }
         
         public Dictionary<string, AttributeValue> To<T>(T table)
@@ -52,13 +52,7 @@ namespace DynamoDBORM.Converters.Internals
 
         private AttributeValue GetAttribute<T>(PropertyInfo prop, T table)
         {
-            AttributeValue attributeValue = null;
-            foreach (var converter in _converters)
-            {
-                attributeValue = converter.ProcessTo(prop, prop.GetValue(table));
-                if (attributeValue is not null) break;
-            }
-            
+            AttributeValue attributeValue = _manager.ToAttVal[prop.PropertyType](prop.GetValue(table));
             if (attributeValue == null) throw new UnsupportedTypeException(prop.PropertyType);
             
             return attributeValue;

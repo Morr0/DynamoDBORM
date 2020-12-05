@@ -8,11 +8,11 @@ namespace DynamoDBORM.Converters.Internals
 {
     internal class ConvertFromImplementation
     {
-        private IEnumerable<BaseConverter> _converters;
+        private ConversionManager _manager;
 
-        public ConvertFromImplementation(IEnumerable<BaseConverter> converters)
+        public ConvertFromImplementation(ConversionManager manager)
         {
-            _converters = converters;
+            _manager = manager;
         }
 
         public T From<T>(Dictionary<string, AttributeValue> attrsValues) where T : new()
@@ -62,16 +62,10 @@ namespace DynamoDBORM.Converters.Internals
 
         private void SetValue<T>(PropertyInfo prop, T obj, AttributeValue attributeValue)
         {
-            object propValue = null;
-            foreach (var converter in _converters)
-            {
-                propValue = converter.ProcessFrom(prop, attributeValue);
-                if (propValue is null) continue;
-                    
-                prop.SetValue(obj, propValue);
-            }
-                
+            object propValue = _manager.FromAttVal[prop.PropertyType](attributeValue);
             if (propValue is null) throw new UnsupportedTypeException(typeof(T));
+            
+            prop.SetValue(obj, propValue);
         }
     }
 }

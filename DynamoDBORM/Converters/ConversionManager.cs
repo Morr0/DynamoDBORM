@@ -21,8 +21,8 @@ namespace DynamoDBORM.Converters
         {
             if (converters is not null) _converters.AddRange(converters);
             
-            _toImpl = new ConvertToImplementation(_converters);
-            _fromImpl = new ConvertFromImplementation(_converters);
+            _toImpl = new ConvertToImplementation(this);
+            _fromImpl = new ConvertFromImplementation(this);
 
             PopulateACompleteToFromDicts();
         }
