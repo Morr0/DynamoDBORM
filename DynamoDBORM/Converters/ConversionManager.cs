@@ -31,8 +31,8 @@ namespace DynamoDBORM.Converters
         {
             foreach (var converter in _converters)
             {
-                ToAttVal.AddOther(converter.GetTos());
-                FromAttVal.AddOther(converter.GetFroms());
+                ToAttVal.AddOther(converter.GetTosMappings);
+                FromAttVal.AddOther(converter.GetFromsMappings);
             }
         }
 

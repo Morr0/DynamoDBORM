@@ -1,6 +1,7 @@
 ﻿using System;
 using DynamoDBORM.Converters;
 using DynamoDBORM.Exceptions.Converters;
+using DynamoDBORM.Exceptions.Validations;
 using DynamoDBORM.Validations;
 using DynamoDBORMTest.ValidationTests.DummyClasses;
 using Xunit;

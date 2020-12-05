@@ -26,7 +26,7 @@ namespace DynamoDBORM.Repositories
         
         public async Task<T> Get<T>(object partitionKey, object sortKey = null) where T : new()
         {
-            var profile = ThrowIfTypeNotHere<T>();
+            var profile = GetProfile<T>();
 
             var dict = await _impl.Get<T>(profile, partitionKey, sortKey).ConfigureAwait(false);
             return _conversionManager.From<T>(dict);
@@ -34,7 +34,7 @@ namespace DynamoDBORM.Repositories
 
         public async Task<IEnumerable<T>> GetMany<T>() where T : new()
         {
-            var profile = ThrowIfTypeNotHere<T>();
+            var profile = GetProfile<T>();
 
             var listOfDicts = await _impl.GetMany<T>(profile).ConfigureAwait(false);
             var list = new List<T>(listOfDicts.Count);
@@ -49,29 +49,27 @@ namespace DynamoDBORM.Repositories
 
         public Task Add<T>(T obj) where T : new()
         {
-            var profile = ThrowIfTypeNotHere<T>();
+            var profile = GetProfile<T>();
 
             return _impl.Add<T>(profile, obj);
         }
 
         public Task Remove<T>(object partitionKey, object sortKey = null) where T : new()
         {
-            var profile = ThrowIfTypeNotHere<T>();
+            var profile = GetProfile<T>();
 
             return _impl.Remove<T>(profile, partitionKey, sortKey);
         }
 
         public Task Update<T>(T obj) where T : new()
         {
-            var profile = ThrowIfTypeNotHere<T>();
+            var profile = GetProfile<T>();
 
             return _impl.Update<T>(profile, obj);
         }
 
-        private TableProfile ThrowIfTypeNotHere<T>() where T : new()
+        private TableProfile GetProfile<T>() where T : new()
         {
-            if (!_profiles.ContainsKey(typeof(T))) throw new TypeWasNotDeclaredException();
-
             return _profiles[typeof(T)];
         }
     }

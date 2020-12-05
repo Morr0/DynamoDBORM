@@ -3,6 +3,7 @@ using System.Reflection;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions.Converters;
+using DynamoDBORM.Exceptions.Validations;
 
 namespace DynamoDBORM.Converters.Internals
 {

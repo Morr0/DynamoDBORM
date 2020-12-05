@@ -1,8 +1,9 @@
 ﻿using System;
+using DynamoDBORM.Exceptions.Converters;
 
-namespace DynamoDBORM.Exceptions.Converters
+namespace DynamoDBORM.Exceptions.Validations
 {
-    public class UnsupportedTypeException : ConversionException
+    public class UnsupportedTypeException : ValidationException
     {
         public UnsupportedTypeException(Type type)
         {

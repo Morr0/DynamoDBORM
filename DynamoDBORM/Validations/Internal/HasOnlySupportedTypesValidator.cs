@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DynamoDBORM.Converters;
 using DynamoDBORM.Exceptions.Converters;
+using DynamoDBORM.Exceptions.Validations;
 
 namespace DynamoDBORM.Validations.Internal
 {

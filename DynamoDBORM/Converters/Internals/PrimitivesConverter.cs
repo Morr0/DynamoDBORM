@@ -7,14 +7,7 @@ namespace DynamoDBORM.Converters.Internals
 {
     internal class PrimitivesConverter : BaseConverter
     {
-        protected override Dictionary<Type, Func<object, AttributeValue>> GetTosMappings()
-        {
-            return ToDynamoDB.To;
-        }
-
-        protected override Dictionary<Type, Func<AttributeValue, object>> GetFromsMappings()
-        {
-            return FromDynamoDB.From;
-        }
+        public override Dictionary<Type, Func<object, AttributeValue>> GetTosMappings => ToDynamoDB.To;
+        public override Dictionary<Type, Func<AttributeValue, object>> GetFromsMappings => FromDynamoDB.From;
     }
 }
