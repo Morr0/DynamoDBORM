@@ -32,8 +32,8 @@ namespace DynamoDBORM.Main
                 ? list.Count 
                 : types.Count();
             
-            TakeCareOfValidations(validators);
             TakeCareOfConverters(converters);
+            TakeCareOfValidations(validators);
             TakeCareOfRepositories();
         }
 
@@ -61,7 +61,7 @@ namespace DynamoDBORM.Main
             };
             if (baseValidators is not null)
                 validators.AddRange(baseValidators);
-            _validationsPipeline = new ValidationsPipeline(validators);
+            _validationsPipeline = new ValidationsPipeline(_conversionManager, validators);
 
             _validationsPipeline.Validate(_types);
         }

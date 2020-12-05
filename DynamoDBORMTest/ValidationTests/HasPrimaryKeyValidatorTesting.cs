@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using DynamoDBORM.Converters;
 using DynamoDBORM.Exceptions;
 using DynamoDBORM.Exceptions.Validations;
 using DynamoDBORM.Validations;
@@ -11,7 +12,7 @@ namespace DynamoDBORMTest.ValidationTests
 {
     public class HasPrimaryKeyValidatorTesting
     {
-        private ValidationsPipeline _sut = new ValidationsPipeline(new List<BaseValidator>
+        private ValidationsPipeline _sut = new ValidationsPipeline(new ConversionManager(), new List<BaseValidator>
         {
             new HasPrimaryKeyValidator()
         });
