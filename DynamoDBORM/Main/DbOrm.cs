@@ -45,7 +45,9 @@ namespace DynamoDBORM.Main
             {
                 _profiles.Add(type, TypeToTableProfile.Get(type));
             }
-            _repository = new Repository(_conversionManager, new AmazonDynamoDBClient(), _profiles);
+            _conversionManager.ConstructProfiles(ref _profiles);
+            
+            _repository = new Repository(_conversionManager, new AmazonDynamoDBClient());
         }
         
         private void TakeCareOfConverters(IEnumerable<BaseConverter> converters)

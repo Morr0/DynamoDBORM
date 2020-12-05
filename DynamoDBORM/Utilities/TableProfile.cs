@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("DynamoDBORMTest")]
-namespace DynamoDBORM.Repositories
+namespace DynamoDBORM.Utilities
 {
     internal class TableProfile
     {

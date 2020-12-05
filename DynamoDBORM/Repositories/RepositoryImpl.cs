@@ -8,6 +8,7 @@ using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Converters;
+using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Repositories
 {

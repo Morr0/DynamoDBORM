@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters.Internals;
+using DynamoDBORM.Repositories;
 using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters
@@ -47,6 +48,11 @@ namespace DynamoDBORM.Converters
         public T From<T>(Dictionary<string, AttributeValue> attrs) where T : new()
         {
             return _fromImpl.From<T>(attrs);
+        }
+
+        internal void ConstructProfiles(ref Dictionary<Type, TableProfile> profiles)
+        {
+            TableProfiles.Profiles = profiles;
         }
     }
 }
