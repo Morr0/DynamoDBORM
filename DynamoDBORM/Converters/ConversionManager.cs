@@ -10,7 +10,8 @@ namespace DynamoDBORM.Converters
     {
         private List<BaseConverter> _converters = new List<BaseConverter>
         {
-            new PrimitivesConverter()
+            new PrimitivesConverter(),
+            new GuidConverter()
         };
 
         private ConvertToImplementation _toImpl;

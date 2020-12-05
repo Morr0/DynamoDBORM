@@ -136,5 +136,15 @@ namespace DynamoDBORMTest.ConvertersTests
             Assert.False(attrs.ContainsKey(nameof(DifferentNamedPartitionAndSortKey.Partition)));
             Assert.False(attrs.ContainsKey(nameof(DifferentNamedPartitionAndSortKey.Sort)));
         }
+
+        [Fact]
+        public void ConvertFromGuidToStringInDynamoDB()
+        {
+            var obj = new GuidProp();
+
+            var attrs = _sut.To(obj);
+            
+            Assert.Equal(obj.Id.ToString(), attrs[nameof(GuidProp.Id)].S);
+        }
     }
 }

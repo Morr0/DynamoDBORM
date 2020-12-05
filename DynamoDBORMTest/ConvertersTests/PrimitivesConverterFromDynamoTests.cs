@@ -166,5 +166,19 @@ namespace DynamoDBORMTest.ConvertersTests
             Assert.Equal(value, obj.Partition);
             Assert.Equal(value, obj.Sort);
         }
+
+        [Fact]
+        public void ShouldConvertStringToGuidFromDynamoDB()
+        {
+            var id = Guid.NewGuid().ToString();
+            var dict = new Dictionary<string, AttributeValue>
+            {
+                { nameof(GuidProp.Id), new AttributeValue{ S = id}}
+            };
+
+            var obj = _sut.From<GuidProp>(dict);
+            
+            Assert.Equal(id, obj.Id.ToString());
+        }
     }
 }
