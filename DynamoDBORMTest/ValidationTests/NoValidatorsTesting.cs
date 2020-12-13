@@ -32,7 +32,19 @@ namespace DynamoDBORMTest.ValidationTests
                 typeof(NonEmpty)
             });
 
-            Assert.Throws<NoPublicParameterlessConstructorException>(expr);
+            Assert.Throws<MissingMethodException>(expr);
+        }
+        
+        [Fact]
+        public void ShouldThrowWhenUnsupportedTypeUsed()
+        {
+            Action action = () => _sut.Validate(new []
+            {
+                typeof(UnsupportedTypeHere)
+            });
+
+            var exception = Assert.Throws<UnsupportedTypeException>(action);
+            Assert.Equal(typeof(UnsupportedType), exception.Type);
         }
     }
 }

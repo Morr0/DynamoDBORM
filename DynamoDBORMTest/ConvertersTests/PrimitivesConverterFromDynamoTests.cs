@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters;
 using DynamoDBORM.Converters.Internals;
 using DynamoDBORM.Exceptions.Converters;
+using DynamoDBORM.Exceptions.Validations;
 using DynamoDBORMTest.ConvertersTests.DummyClasses;
 using Xunit;
 
@@ -102,22 +103,6 @@ namespace DynamoDBORMTest.ConvertersTests
             Assert.NotEqual(value, obj.Unmapped);
         }
 
-        [Fact]
-        public void ShouldThrowWhenMappingToAnUnsupportedType()
-        {
-            // var dict = new Dictionary<string, AttributeValue>
-            // {
-            //     { nameof(UnsupportedTypeExists.Id), new AttributeValue{ S = "j"}},
-            //     { nameof(UnsupportedTypeExists.Type), new AttributeValue{ S = "jgjgj"}}
-            // };
-            //
-            // Action action = () => _sut.From<UnsupportedTypeExists>(dict);
-            //
-            // Assert.Throws<UnsupportedTypeException>(action);
-            
-            // TODO implement this to be called within the validation pipeline
-        }
-        
         [Fact]
         public void ShouldUseSpecificAttributeNameWithAttributeNameAttribute()
         {

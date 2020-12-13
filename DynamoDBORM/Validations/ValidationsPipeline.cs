@@ -13,11 +13,11 @@ namespace DynamoDBORM.Validations
         private ConversionManager _conversionManager;
         private readonly IEnumerable<BaseValidator> _validators;
 
-        public ValidationsPipeline(ConversionManager conversionManager, IEnumerable<BaseValidator> CustomValidators)
+        public ValidationsPipeline(ConversionManager conversionManager, IEnumerable<BaseValidator> customValidators)
         {
             PopulateBaseAttributes();
             _conversionManager = conversionManager;
-            _validators = CustomValidators;
+            _validators = customValidators;
         }
 
         private void PopulateBaseAttributes()
@@ -35,17 +35,15 @@ namespace DynamoDBORM.Validations
         public void Validate(IEnumerable<Type> tablesTypes)
         {
             foreach (var type in tablesTypes)
-            {
-                if (HasNotParameterlessConstructor(type)) throw new NoPublicParameterlessConstructorException();
+            { 
                 var obj = Activator.CreateInstance(type);
 
-                HasOnlySupportedTypesValidator.Ensure(ref _conversionManager, ref obj);
+                foreach (var validator in _validators)
+                {
+                    validator.ProcessValidation(ref obj, ref _attributes);
+                }
                 
-                // TODO fix this primary key bug
-                // foreach (var validator in _validators)
-                // {
-                //     validator.ProcessValidation(ref obj, ref _attributes);
-                // }
+                HasOnlySupportedTypesValidator.Ensure(ref _conversionManager, ref obj);
             }
         }
 
