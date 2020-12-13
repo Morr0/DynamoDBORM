@@ -36,18 +36,12 @@ namespace DynamoDBORM.Converters
             }
         }
 
-        internal Dictionary<Type, Func<object, AttributeValue>> ToAttVal { get; } = new Dictionary<Type, Func<object, AttributeValue>>();
-        internal Dictionary<Type, Func<AttributeValue, object>> FromAttVal { get; } = new Dictionary<Type, Func<AttributeValue, object>>();
+        internal readonly Dictionary<Type, Func<object, AttributeValue>> ToAttVal = new Dictionary<Type, Func<object, AttributeValue>>();
+        internal readonly Dictionary<Type, Func<AttributeValue, object>> FromAttVal = new Dictionary<Type, Func<AttributeValue, object>>();
 
-        public Dictionary<string, AttributeValue> To<T>(T table)
-        {
-            return _toImpl.To(table);
-        }
+        public Dictionary<string, AttributeValue> To<T>(T table) => _toImpl.To(table);
 
-        public T From<T>(Dictionary<string, AttributeValue> attrs) where T : new()
-        {
-            return _fromImpl.From<T>(attrs);
-        }
+        public T From<T>(Dictionary<string, AttributeValue> attrs) where T : new() => _fromImpl.From<T>(attrs);
 
         internal void ConstructProfiles(ref Dictionary<Type, TableProfile> profiles)
         {
