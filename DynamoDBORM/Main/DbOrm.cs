@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Amazon.DynamoDBv2;
 using DynamoDBORM.Converters;
+using DynamoDBORM.Exceptions.Validations;
 using DynamoDBORM.Repositories;
 using DynamoDBORM.Utilities;
 using DynamoDBORM.Validations;
@@ -12,27 +14,32 @@ namespace DynamoDBORM.Main
     public class DbOrm
     {
         private readonly DataContext[] _contexts;
-        private readonly IEnumerable<Type> _types;
+        private List<Type> _types;
         
         private ValidationsPipeline _validationsPipeline;
         
         private ConversionManager _conversionManager;
 
+        private Dictionary<Type, string> _typeToContextNames;
         private Dictionary<Type, TableConfiguration> _tableConfigurations;
         private Dictionary<Type, IRepository> _repositories;
         private Dictionary<Type, TableProfile> _profiles;
-
-        private DataContext[] _dataContexts;
+        
+        private Dictionary<string, DataContext> _dataContexts;
 
         public DbOrm(DataContext[] contexts, IEnumerable<BaseValidator> validators, IEnumerable<BaseConverter> converters)
         {
             _contexts = contexts;
             SetValidators(validators);
             SetConverters(converters);
-            
-            
+            _typeToContextNames = new Dictionary<Type, string>();
+            _tableConfigurations = new Dictionary<Type, TableConfiguration>();
+            _types = new List<Type>();
+            _dataContexts = new Dictionary<string, DataContext>(contexts.Length);
+
             foreach (var context in contexts)
             {
+                _dataContexts.Add(context.GetType().Name, context);
                 TakeCareOfDataContext(context);
             }
         }
@@ -40,25 +47,54 @@ namespace DynamoDBORM.Main
         private void TakeCareOfDataContext(DataContext dataContext)
         {
             var contextProps = dataContext.GetType().GetProperties();
-            _tableConfigurations = new Dictionary<Type, TableConfiguration>(contextProps.Length);
-            var types = new List<Type>(contextProps.Length);
-
             foreach (var prop in contextProps)
             {
-                if (prop.PropertyType == typeof(Table<object, TableConfiguration>))
+                if (IsTableObject(prop))
                 {
-                    var genericTypeArguments = prop.GetType().GenericTypeArguments;
+                    Console.WriteLine("True");
+                    var genericTypeArguments = prop.PropertyType.GenericTypeArguments;
                     // The indexes are according to the Table class
                     var type = genericTypeArguments[0];
                     var configPerTypeTable = genericTypeArguments[1];
                     
-                    types.Add(type);
+                    _types.Add(type);
                     _tableConfigurations.Add(type, CreateConfig(configPerTypeTable));
                 }
             }
             
             EnsureTypesAreValid();
-            TakeCareOfRepositories(ref types);
+            TakeCareOfRepositories();
+            PopulateTablesInContexts();
+        }
+
+        private bool IsTableObject(PropertyInfo prop)
+        {
+            var generics = prop.PropertyType.GenericTypeArguments;
+            return generics.Length == 2 && generics[1] == typeof(TableConfiguration);
+        }
+
+        private void PopulateTablesInContexts()
+        {
+            foreach (var pair in _typeToContextNames)
+            {
+                var type = pair.Key;
+                string contextName = pair.Value;
+
+                var context = _dataContexts[contextName];
+                var table = Activator.CreateInstance<Table<object, TableConfiguration>>();
+                if (table is null) throw new NoPublicParameterlessConstructorException();
+                table.AddRepository(_repositories[type]);
+                
+                Console.WriteLine("Here");
+                // context.GetType().GetProperty(type.Name).SetValue(context, table);
+                foreach (var prop in context.GetType().GetProperties())
+                {
+                    if (prop.PropertyType.Name == type.Name)
+                    {
+                        prop.SetValue(context, table);
+                    }
+                }
+            }
         }
 
         private TableConfiguration CreateConfig(Type configPerTypeTable)
@@ -71,12 +107,12 @@ namespace DynamoDBORM.Main
             _validationsPipeline.Validate(_types);
         }
 
-        private void TakeCareOfRepositories(ref List<Type> types)
+        private void TakeCareOfRepositories()
         {
-            _repositories = new Dictionary<Type, IRepository>(types.Count);
-            _profiles = new Dictionary<Type, TableProfile>(types.Count);
+            _repositories = new Dictionary<Type, IRepository>(_types.Count);
+            _profiles = new Dictionary<Type, TableProfile>(_types.Count);
             
-            foreach (var type in types)
+            foreach (var type in _types)
             {
                 _repositories.Add(type, GetRepository(type));
                 _profiles.Add(type, TypeToTableProfile.Get(type));

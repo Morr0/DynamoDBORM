@@ -41,10 +41,11 @@ namespace DynamoDBORM.Validations
 
                 HasOnlySupportedTypesValidator.Ensure(ref _conversionManager, ref obj);
                 
-                foreach (var validator in _validators)
-                {
-                    validator.ProcessValidation(ref obj, ref _attributes);
-                }
+                // TODO fix this primary key bug
+                // foreach (var validator in _validators)
+                // {
+                //     validator.ProcessValidation(ref obj, ref _attributes);
+                // }
             }
         }
 

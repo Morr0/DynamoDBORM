@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamoDBORM", "DynamoDBORM\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DynamoDBORMTest", "DynamoDBORMTest\DynamoDBORMTest.csproj", "{280E56BB-3687-447B-A124-A75C5C3C7245}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleTestApp", "ConsoleTestApp\ConsoleTestApp.csproj", "{468887CC-5A09-43CF-BB93-EC535CD0F225}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{280E56BB-3687-447B-A124-A75C5C3C7245}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{280E56BB-3687-447B-A124-A75C5C3C7245}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{280E56BB-3687-447B-A124-A75C5C3C7245}.Release|Any CPU.Build.0 = Release|Any CPU
+		{468887CC-5A09-43CF-BB93-EC535CD0F225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{468887CC-5A09-43CF-BB93-EC535CD0F225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{468887CC-5A09-43CF-BB93-EC535CD0F225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{468887CC-5A09-43CF-BB93-EC535CD0F225}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

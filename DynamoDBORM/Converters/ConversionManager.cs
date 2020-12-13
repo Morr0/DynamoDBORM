@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters.Internals;
-using DynamoDBORM.Repositories;
 using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters
@@ -37,8 +36,8 @@ namespace DynamoDBORM.Converters
             }
         }
 
-        internal Dictionary<Type, Func<object, AttributeValue>> ToAttVal { get; set; } = new Dictionary<Type, Func<object, AttributeValue>>();
-        internal Dictionary<Type, Func<AttributeValue, object>> FromAttVal { get; set; } = new Dictionary<Type, Func<AttributeValue, object>>();
+        internal Dictionary<Type, Func<object, AttributeValue>> ToAttVal { get; } = new Dictionary<Type, Func<object, AttributeValue>>();
+        internal Dictionary<Type, Func<AttributeValue, object>> FromAttVal { get; } = new Dictionary<Type, Func<AttributeValue, object>>();
 
         public Dictionary<string, AttributeValue> To<T>(T table)
         {

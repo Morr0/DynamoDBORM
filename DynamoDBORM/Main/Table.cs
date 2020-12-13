@@ -10,7 +10,12 @@ namespace DynamoDBORM.Main
     {
         private IRepository _repository;
 
-        internal Table(IRepository repository)
+        internal Table()
+        {
+            
+        }
+
+        internal void AddRepository(IRepository repository)
         {
             _repository = repository;
         }
