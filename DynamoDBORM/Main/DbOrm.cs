@@ -81,7 +81,7 @@ namespace DynamoDBORM.Main
                 string contextName = pair.Value;
 
                 var context = _dataContexts[contextName];
-                var table = Activator.CreateInstance<Table<object, TableConfiguration>>();
+                var table = Activator.CreateInstance<Table<object>>();
                 if (table is null) throw new NoPublicParameterlessConstructorException();
                 table.AddRepository(_repositories[type]);
                 

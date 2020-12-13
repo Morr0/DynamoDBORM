@@ -4,6 +4,6 @@ namespace ConsoleTestApp
 {
     public class TableContexts : DataContext
     {
-        public Table<Sample, TableConfiguration> Sample { get; set; }
+        public Table<Sample> Sample { get; set; }
     }
 }

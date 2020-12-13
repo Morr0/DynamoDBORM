@@ -4,13 +4,16 @@ using DynamoDBORM.Repositories;
 
 namespace DynamoDBORM.Main
 {
-    public sealed class Table<TTableModel, TTableConfiguration> 
-        where TTableModel : new()
-        where TTableConfiguration : TableConfiguration
+    public sealed class Table<TTableModel> where TTableModel : new()
     {
         private IRepository _repository;
 
         internal Table()
+        {
+            
+        }
+
+        internal void AddInstance(TTableModel modelObj)
         {
             
         }

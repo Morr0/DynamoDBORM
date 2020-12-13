@@ -8,12 +8,7 @@ namespace ConsoleTestApp
         static void Main(string[] args)
         {
             var context = new TableContexts();
-            DbOrm main = new DbOrm(new []
-            {
-                context, 
-            }, null, null);
-
-            if (context.Sample is null) Console.WriteLine("Null");
+            var cm = new ContextManager(context);
             context.Sample.Add(new Sample
             {
                 Id = "Hello"
