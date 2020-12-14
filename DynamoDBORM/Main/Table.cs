@@ -8,7 +8,7 @@ namespace DynamoDBORM.Main
     {
         private IRepository _repository;
 
-        internal Table()
+        public Table()
         {
             
         }

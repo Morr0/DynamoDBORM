@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Amazon.DynamoDBv2;
-using Amazon.DynamoDBv2.DocumentModel;
 using DynamoDBORM.Converters;
-using DynamoDBORM.Exceptions.Validations;
 using DynamoDBORM.Repositories;
 
 namespace DynamoDBORM.Main
@@ -25,17 +23,20 @@ namespace DynamoDBORM.Main
         {
             foreach (var context in _contexts)
             {
-                foreach (var property in context.GetType().GetProperties())
+                foreach (var prop in context.GetType().GetProperties())
                 {
-                    if (IsTableObject(property))
+                    if (IsTableObject(prop))
                     {
-                        var tableModel = property.PropertyType.GenericTypeArguments[0];
+                        var tableType = prop.PropertyType;
+                        var tableModel = tableType.GenericTypeArguments[0];
                         var tableModelObj = Activator.CreateInstance(tableModel);
-                        var table = Activator.CreateInstance<Table<object>>();
+
+                        var tableGenerics = tableType.MakeGenericType(tableModel);
+                        var table = Activator.CreateInstance(tableGenerics) as Table<object>;
                         table.AddInstance(tableModelObj);
                         table.AddRepository(new Repository(_conversionManager, new AmazonDynamoDBClient()));
-
-                        var prop = table.GetType().GetProperty(property.PropertyType.Name);
+                        
+                        Console.WriteLine(tableModel.FullName);
                         prop.SetValue(context, table);
                     }
                 }
@@ -45,7 +46,7 @@ namespace DynamoDBORM.Main
         private bool IsTableObject(PropertyInfo prop)
         {
             var generics = prop.PropertyType.GenericTypeArguments;
-            return generics.Length == 1 && generics[0] == typeof(TableConfiguration);
+            return generics.Length == 1;
         }
     }
 }
