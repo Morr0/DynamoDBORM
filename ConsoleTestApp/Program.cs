@@ -18,7 +18,7 @@ namespace ConsoleTestApp
             var obj = await repository.Get<Sample>("2021/01/").ConfigureAwait(false);
             Console.WriteLine(obj.Something);
             obj.Something = "Hello world";
-            await repository.Update(obj).ConfigureAwait(false);
+            await repository.Remove<Sample>(obj.Id);
         }
     }
 }

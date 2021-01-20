@@ -59,7 +59,7 @@ namespace DynamoDBORM.Repositories
 
         public Task Remove<T>(object partitionKey, object sortKey = null) where T : new()
         {
-            var profile = _profiles[typeof(T)];
+            var profile = EnsureProfile<T>();
             return _impl.Remove<T>(_client, profile, partitionKey, sortKey);
         }
 
