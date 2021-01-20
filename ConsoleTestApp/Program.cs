@@ -1,18 +1,20 @@
-﻿using System;
-using DynamoDBORM.Main;
+﻿using System.Threading.Tasks;
+using DynamoDBORM.Repositories;
 
 namespace ConsoleTestApp
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
-            var context = new TableContexts();
-            var cm = new ContextManager(context);
-            context.Sample.Add(new Sample
+            var repositoryFactory = new RepositoryFactory();
+            var repository = repositoryFactory.Create();
+            
+            var sample = new Sample
             {
-                Id = "Hello"
-            });
+                Id = "2021/01/"
+            };
+            await repository.Add(sample).ConfigureAwait(false);
         }
     }
 }

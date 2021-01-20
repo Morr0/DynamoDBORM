@@ -42,10 +42,5 @@ namespace DynamoDBORM.Converters
         public Dictionary<string, AttributeValue> To<T>(T table) => _toImpl.To(table);
 
         public T From<T>(Dictionary<string, AttributeValue> attrs) where T : new() => _fromImpl.From<T>(attrs);
-
-        internal void ConstructProfiles(ref Dictionary<Type, TableProfile> profiles)
-        {
-            TableProfiles.Profiles = profiles;
-        }
     }
 }
