@@ -14,16 +14,15 @@ namespace DynamoDBORM.Repositories
 {
     internal class RepositoryImpl
     {
-        private readonly ConversionManager _manager;
-        private AmazonDynamoDBClient _client;
+        private readonly ConversionManager _conversionManager;
 
-        public RepositoryImpl(ConversionManager manager, AmazonDynamoDBClient client)
+        public RepositoryImpl(ConversionManager conversionManager)
         {
-            _manager = manager;
-            _client = client;
+            _conversionManager = conversionManager;
         }
 
-        public async Task<Dictionary<string, AttributeValue>> Get<T>(TableProfile profile,
+        public async Task<Dictionary<string, AttributeValue>> Get<T>(AmazonDynamoDBClient client
+            , TableProfile profile,
             object partitionKeyValue, object sortKeyValue)
         {
             var request = new GetItemRequest
@@ -33,7 +32,7 @@ namespace DynamoDBORM.Repositories
                     ref partitionKeyValue, ref sortKeyValue)
             };
 
-            return (await _client.GetItemAsync(request, CancellationToken.None).ConfigureAwait(false)).Item;
+            return (await client.GetItemAsync(request, CancellationToken.None).ConfigureAwait(false)).Item;
         }
 
         private Dictionary<string, AttributeValue> Key(string partitionKeyName, string sortKeyName, 
@@ -41,35 +40,35 @@ namespace DynamoDBORM.Repositories
         {
             var dict = new Dictionary<string, AttributeValue>();
 
-            dict.Add(partitionKeyName, _manager.ToAttVal[partitionKey.GetType()](partitionKey));
+            dict.Add(partitionKeyName, _conversionManager.ToAttVal[partitionKey.GetType()](partitionKey));
             if (!string.IsNullOrEmpty(sortKeyName))
-                dict.Add(sortKeyName, _manager.ToAttVal[sortKey.GetType()](sortKey));
+                dict.Add(sortKeyName, _conversionManager.ToAttVal[sortKey.GetType()](sortKey));
             
             return dict;
         }
 
-        public async Task<List<Dictionary<string, AttributeValue>>> GetMany<T>(TableProfile profile) where T : new()
+        public async Task<List<Dictionary<string, AttributeValue>>> GetMany<T>(AmazonDynamoDBClient client, TableProfile profile) where T : new()
         {
             var request = new ScanRequest
             {
                 TableName = profile.TableName
             };
 
-            return (await _client.ScanAsync(request, CancellationToken.None).ConfigureAwait(false)).Items;
+            return (await client.ScanAsync(request, CancellationToken.None).ConfigureAwait(false)).Items;
         }
 
-        public Task Add<T>(TableProfile profile, T obj) where T : new()
+        public Task Add<T>(AmazonDynamoDBClient client, TableProfile profile, T obj) where T : new()
         {
             var request = new PutItemRequest
             {
                 TableName = profile.TableName,
-                Item = _manager.To(obj)
+                Item = _conversionManager.To(obj)
             };
 
-            return _client.PutItemAsync(request, CancellationToken.None);
+            return client.PutItemAsync(request, CancellationToken.None);
         }
 
-        public Task Remove<T>(TableProfile profile, object partitionKey, object sortKey) where T : new()
+        public Task Remove<T>(AmazonDynamoDBClient client, TableProfile profile, object partitionKey, object sortKey) where T : new()
         {
             var request = new DeleteItemRequest
             {
@@ -77,10 +76,10 @@ namespace DynamoDBORM.Repositories
                 Key = Key(profile.PartitionKeyName, profile.SortKeyName, ref partitionKey, ref sortKey)
             };
 
-            return _client.DeleteItemAsync(request, CancellationToken.None);
+            return client.DeleteItemAsync(request, CancellationToken.None);
         }
 
-        public Task Update<T>(TableProfile profile, T obj) where T : new()
+        public Task Update<T>(AmazonDynamoDBClient client, TableProfile profile, T obj) where T : new()
         {
             var updatables = GetUpdateExpression<T>(profile);
             var request = new UpdateItemRequest
@@ -91,7 +90,7 @@ namespace DynamoDBORM.Repositories
                 ExpressionAttributeValues = updatables.values
             };
 
-            return _client.UpdateItemAsync(request, CancellationToken.None);
+            return client.UpdateItemAsync(request, CancellationToken.None);
         }
 
         private (string updateString, Dictionary<string, AttributeValue> values) GetUpdateExpression<T>(TableProfile profile)
@@ -108,7 +107,7 @@ namespace DynamoDBORM.Repositories
                 if (prop.Name != profile.PartitionKeyName && prop.Name != profile.SortKeyName)
                 {
                     string valueName = $":{prop.Name}";
-                    values.Add(valueName, _manager.To(prop.PropertyType)[prop.Name]);
+                    values.Add(valueName, _conversionManager.To(prop.PropertyType)[prop.Name]);
 
                     sb.Append($"{prop.Name} = {valueName},");
                 }

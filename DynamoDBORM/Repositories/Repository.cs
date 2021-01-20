@@ -20,13 +20,13 @@ namespace DynamoDBORM.Repositories
             _client = client;
             _profiles = new Dictionary<Type, TableProfile>();
 
-            _impl = new RepositoryImpl(_conversionManager, _client);
+            _impl = new RepositoryImpl(_conversionManager);
         }
         
         public async Task<T> Get<T>(object partitionKey, object sortKey = null) where T : new()
         {
             var profile = EnsureProfile<T>();
-            var dict = await _impl.Get<T>(profile, partitionKey, sortKey).ConfigureAwait(false);
+            var dict = await _impl.Get<T>(_client, profile, partitionKey, sortKey).ConfigureAwait(false);
             return _conversionManager.From<T>(dict);
         }
 
@@ -40,7 +40,7 @@ namespace DynamoDBORM.Repositories
         public async Task<IEnumerable<T>> GetMany<T>() where T : new()
         {
             var profile = EnsureProfile<T>();
-            var listOfDicts = await _impl.GetMany<T>(profile).ConfigureAwait(false);
+            var listOfDicts = await _impl.GetMany<T>(_client, profile).ConfigureAwait(false);
             var list = new List<T>(listOfDicts.Count);
             foreach (var dict in listOfDicts)
             {
@@ -54,19 +54,19 @@ namespace DynamoDBORM.Repositories
         public Task Add<T>(T obj) where T : new()
         {
             var profile = EnsureProfile<T>();
-            return _impl.Add<T>(profile, obj);
+            return _impl.Add<T>(_client, profile, obj);
         }
 
         public Task Remove<T>(object partitionKey, object sortKey = null) where T : new()
         {
             var profile = _profiles[typeof(T)];
-            return _impl.Remove<T>(profile, partitionKey, sortKey);
+            return _impl.Remove<T>(_client, profile, partitionKey, sortKey);
         }
 
         public Task Update<T>(T obj) where T : new()
         {
             var profile = EnsureProfile<T>();
-            return _impl.Update<T>(profile, obj);
+            return _impl.Update<T>(_client, profile, obj);
         }
     }
 }
