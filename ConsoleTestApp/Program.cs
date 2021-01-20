@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DynamoDBORM.Repositories;
 
 namespace ConsoleTestApp
@@ -10,11 +11,14 @@ namespace ConsoleTestApp
             var repositoryFactory = new RepositoryFactory();
             var repository = repositoryFactory.Create();
             
-            var sample = new Sample
-            {
-                Id = "2021/01/"
-            };
-            await repository.Add(sample).ConfigureAwait(false);
+            // var sample = new Sample
+            // {
+            //     Id = "2021/01/"
+            // };
+            var obj = await repository.Get<Sample>("2021/01/").ConfigureAwait(false);
+            Console.WriteLine(obj.Something);
+            obj.Something = "Hello world";
+            await repository.Update(obj).ConfigureAwait(false);
         }
     }
 }

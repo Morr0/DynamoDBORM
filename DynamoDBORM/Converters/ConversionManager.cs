@@ -8,7 +8,7 @@ namespace DynamoDBORM.Converters
 {
     public sealed class ConversionManager
     {
-        private List<BaseConverter> _converters = new List<BaseConverter>
+        private List<BaseConverter> _converters = new()
         {
             new PrimitivesConverter(),
             new GuidConverter()
@@ -36,8 +36,8 @@ namespace DynamoDBORM.Converters
             }
         }
 
-        internal readonly Dictionary<Type, Func<object, AttributeValue>> ToAttVal = new Dictionary<Type, Func<object, AttributeValue>>();
-        internal readonly Dictionary<Type, Func<AttributeValue, object>> FromAttVal = new Dictionary<Type, Func<AttributeValue, object>>();
+        internal readonly Dictionary<Type, Func<object, AttributeValue>> ToAttVal = new();
+        internal readonly Dictionary<Type, Func<AttributeValue, object>> FromAttVal = new();
 
         public Dictionary<string, AttributeValue> To<T>(T table) => _toImpl.To(table);
 

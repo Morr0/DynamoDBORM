@@ -6,5 +6,7 @@ namespace ConsoleTestApp
     {
         [PartitionKey]
         public string Id { get; set; }
+
+        public string Something { get; set; }
     }
 }

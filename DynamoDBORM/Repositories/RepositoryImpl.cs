@@ -81,41 +81,31 @@ namespace DynamoDBORM.Repositories
 
         public Task Update<T>(AmazonDynamoDBClient client, TableProfile profile, T obj) where T : new()
         {
-            var updatables = GetUpdateExpression<T>(profile);
-            var request = new UpdateItemRequest
-            {
-                TableName = profile.TableName,
-                Key = Key<T>(profile.PartitionKeyName, profile.SortKeyName, ref obj),
-                UpdateExpression = updatables.updateString,
-                ExpressionAttributeValues = updatables.values
-            };
-
-            return client.UpdateItemAsync(request, CancellationToken.None);
-        }
-
-        private (string updateString, Dictionary<string, AttributeValue> values) GetUpdateExpression<T>(TableProfile profile)
-        {
             var props = typeof(T).GetProperties();
-            var sb = new StringBuilder(props.Length * 2);
-            sb.Append("SET "); // Check AWS docs for updating an item in DynamoDB
-            var values = new Dictionary<string, AttributeValue>(props.Length * 2);
+            var sb = new StringBuilder(props.Length + 1).Append("SET ");
+            var values = new Dictionary<string, AttributeValue>(props.Length);
 
             foreach (var prop in props)
             {
                 if (Unmapped(prop)) continue;
-                
-                if (prop.Name != profile.PartitionKeyName && prop.Name != profile.SortKeyName)
-                {
-                    string valueName = $":{prop.Name}";
-                    values.Add(valueName, _conversionManager.To(prop.PropertyType)[prop.Name]);
+                if (prop.Name == profile.PartitionKeyName || prop.Name == profile.SortKeyName) continue;
+                var propValue = prop.GetValue(obj);
 
-                    sb.Append($"{prop.Name} = {valueName},");
-                }
+                string valueName = $":{prop.Name}";
+                values.Add(valueName, _conversionManager.ToAttVal[prop.PropertyType](propValue));
+                sb.Append($"{prop.Name}={valueName},");
             }
+            string updateString = sb.ToString().TrimEnd(',');
+            
+            var request = new UpdateItemRequest
+            {
+                TableName = profile.TableName,
+                Key = Key<T>(profile, obj),
+                UpdateExpression = updateString,
+                ExpressionAttributeValues = values
+            };
 
-            sb.Remove(sb.Length - 1, 1);
-            string updateString = sb.ToString();
-            return (updateString, values);
+            return client.UpdateItemAsync(request, CancellationToken.None);
         }
 
         private bool Unmapped(PropertyInfo prop)
@@ -123,13 +113,16 @@ namespace DynamoDBORM.Repositories
             return prop.GetCustomAttribute<UnmappedAttribute>() != null;
         }
 
-        private Dictionary<string, AttributeValue> Key<T>(string partitionKeyName, string sortKeyName, ref T obj)
+        private Dictionary<string, AttributeValue> Key<T>(TableProfile profile, T obj)
         {
             var type = typeof(T);
-            object partitionKeyValue = type.GetProperty(partitionKeyName);
-            object sortKeyValue = type.GetProperty(sortKeyName);
-
-            return Key(partitionKeyName, sortKeyName, ref partitionKeyValue, ref sortKeyValue);
+            object partitionKeyValue = type.GetProperty(profile.PartitionKeyName)?.GetValue(obj);
+            object sortKeyValue = null;
+            if (profile.SortKeyName is null) return Key(profile.PartitionKeyName, null, 
+                    ref partitionKeyValue, ref sortKeyValue);
+            
+            sortKeyValue = type.GetProperty(profile.SortKeyName)?.GetValue(obj);
+            return Key(profile.PartitionKeyName, profile.SortKeyName, ref partitionKeyValue, ref sortKeyValue);
         }
     }
 }
