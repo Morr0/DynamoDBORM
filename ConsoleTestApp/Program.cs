@@ -10,15 +10,20 @@ namespace ConsoleTestApp
         {
             var repositoryFactory = new RepositoryFactory();
             var repository = repositoryFactory.Create();
-            
-            // var sample = new Sample
-            // {
-            //     Id = "2021/01/"
-            // };
-            var obj = await repository.Get<Sample>("2021/01/").ConfigureAwait(false);
-            Console.WriteLine(obj.Something);
-            obj.Something = "Hello world";
-            await repository.Remove<Sample>(obj.Id);
+
+            string id = "2021/01/";
+            var sample = new Sample
+            {
+                Id = id,
+                Something = "UUU"
+            };
+            await repository.Add(sample).ConfigureAwait(false);
+
+            await Task.Delay(1000);
+
+            string value = await repository.GetProperty<Sample, string>(id, null, 
+                x => x.Something).ConfigureAwait(false);
+            Console.WriteLine(value);
         }
     }
 }

@@ -29,14 +29,14 @@ namespace DynamoDBORM.Repositories
             {
                 TableName = profile.TableName,
                 Key = Key(profile.PartitionKeyName, profile.SortKeyName, 
-                    ref partitionKeyValue, ref sortKeyValue)
+                    partitionKeyValue, sortKeyValue)
             };
 
             return (await client.GetItemAsync(request, CancellationToken.None).ConfigureAwait(false)).Item;
         }
 
         private Dictionary<string, AttributeValue> Key(string partitionKeyName, string sortKeyName, 
-            ref object partitionKey, ref object sortKey)
+            object partitionKey, object sortKey)
         {
             var dict = new Dictionary<string, AttributeValue>();
 
@@ -73,7 +73,7 @@ namespace DynamoDBORM.Repositories
             var request = new DeleteItemRequest
             {
                 TableName = profile.TableName,
-                Key = Key(profile.PartitionKeyName, profile.SortKeyName, ref partitionKey, ref sortKey)
+                Key = Key(profile.PartitionKeyName, profile.SortKeyName, partitionKey, sortKey)
             };
 
             return client.DeleteItemAsync(request, CancellationToken.None);
@@ -119,10 +119,28 @@ namespace DynamoDBORM.Repositories
             object partitionKeyValue = type.GetProperty(profile.PartitionKeyName)?.GetValue(obj);
             object sortKeyValue = null;
             if (profile.SortKeyName is null) return Key(profile.PartitionKeyName, null, 
-                    ref partitionKeyValue, ref sortKeyValue);
+                    partitionKeyValue, sortKeyValue);
             
             sortKeyValue = type.GetProperty(profile.SortKeyName)?.GetValue(obj);
-            return Key(profile.PartitionKeyName, profile.SortKeyName, ref partitionKeyValue, ref sortKeyValue);
+            return Key(profile.PartitionKeyName, profile.SortKeyName, partitionKeyValue, sortKeyValue);
+        }
+
+        public async Task<TProperty> GetProperty<TProperty>(AmazonDynamoDBClient client, 
+            TableProfile profile, object partitionKey, object sortKey, string memberName)
+        {
+            var request = new GetItemRequest
+            {
+                TableName = profile.TableName,
+                Key = Key(profile.PartitionKeyName, profile.SortKeyName, partitionKey, sortKey),
+                ProjectionExpression = memberName
+            };
+
+            var response = await client.GetItemAsync(request).ConfigureAwait(false);
+            if (!response.Item.ContainsKey(memberName)) return default;
+
+            TProperty value = (TProperty) _conversionManager.FromAttVal[typeof(TProperty)]
+                (response.Item[memberName]);
+            return value;
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using DynamoDBORM.Converters;
+using DynamoDBORM.Exceptions.Repositories;
 using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Repositories
@@ -28,6 +30,19 @@ namespace DynamoDBORM.Repositories
             var profile = EnsureProfile<T>();
             var dict = await _impl.Get<T>(_client, profile, partitionKey, sortKey).ConfigureAwait(false);
             return _conversionManager.From<T>(dict);
+        }
+
+        public async Task<TProperty> GetProperty<TModel, TProperty>
+            (object partitionKey, object sortKey, Expression<Func<TModel, TProperty>> expression) 
+            where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+
+            return await _impl.GetProperty<TProperty>(_client, profile, partitionKey, sortKey,
+                expr.Member.Name).ConfigureAwait(false);
         }
 
         private TableProfile EnsureProfile<T>() where T : new()
