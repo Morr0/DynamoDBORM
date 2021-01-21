@@ -83,5 +83,18 @@ namespace DynamoDBORM.Repositories
             var profile = EnsureProfile<T>();
             return _impl.Update<T>(_client, profile, obj);
         }
+
+        public async Task<TModel> UpdateProperty<TModel, TProperty>(object partitionKey, object sortKey,
+            Expression<Func<TModel, TProperty>> expression, TProperty value)
+            where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+            
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+
+            return await _impl.UpdateProperty<TModel, TProperty>(_client, profile, partitionKey, sortKey,
+                expr.Member.Name, value).ConfigureAwait(false);
+        }
     }
 }

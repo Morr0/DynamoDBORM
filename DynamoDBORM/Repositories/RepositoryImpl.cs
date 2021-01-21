@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -141,6 +140,27 @@ namespace DynamoDBORM.Repositories
             TProperty value = (TProperty) _conversionManager.FromAttVal[typeof(TProperty)]
                 (response.Item[memberName]);
             return value;
+        }
+
+        public async Task<TModel> UpdateProperty<TModel, TProperty>(AmazonDynamoDBClient client, TableProfile profile, 
+            object partitionKey, object sortKey, string memberName, TProperty value)
+            where TModel : new()
+        {
+            string attValName = $":{memberName}";
+            var request = new UpdateItemRequest
+            {
+                TableName = profile.TableName,
+                Key = Key(profile.PartitionKeyName, profile.SortKeyName, partitionKey, sortKey),
+                ExpressionAttributeValues = new Dictionary<string, AttributeValue>
+                {
+                    {attValName, _conversionManager.ToAttVal[typeof(TProperty)](value)}
+                },
+                UpdateExpression = $"SET {memberName}={attValName}",
+                ReturnValues = ReturnValue.ALL_NEW
+            };
+
+            var response = await client.UpdateItemAsync(request).ConfigureAwait(false);
+            return _conversionManager.From<TModel>(response.Attributes);
         }
     }
 }
