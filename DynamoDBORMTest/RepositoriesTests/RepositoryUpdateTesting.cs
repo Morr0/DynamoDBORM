@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters;
+using DynamoDBORM.Exceptions.Repositories;
 using DynamoDBORM.Repositories;
 using DynamoDBORMTest.RepositoriesTests.DummyClasses;
 using Moq;
@@ -109,6 +111,25 @@ namespace DynamoDBORMTest.RepositoriesTests
             Assert.Null(obj1.Something);
             _dynamoDBClient.Verify(x => 
                 x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldThrowWhenUpdatingAnyPrimaryKey()
+        {
+            // Arrange
+            var obj = new Basic
+            {
+                Id = "UU"
+            };
+
+            // Act
+            var task = _sut.UpdateProperty(obj.Id, null, 
+                (Basic x) => x.Id, null);
+            
+            // Assert
+            await Assert.ThrowsAsync<CannotUpdatePrimaryKeyException>(async() => await task);
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Never);
         }
     }
 }

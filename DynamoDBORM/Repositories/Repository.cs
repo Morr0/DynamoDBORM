@@ -99,9 +99,17 @@ namespace DynamoDBORM.Repositories
             
             var expr = expression.Body as MemberExpression;
             if (expr is null) throw new PropertyNotSelectedException();
+            
+            if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
 
             return await _impl.UpdateProperty<TModel, TProperty>(_client, profile, partitionKey, sortKey,
                 expr.Member.Name, value).ConfigureAwait(false);
+        }
+
+        private bool IsTryingToUpdatePrimaryKey(TableProfile profile, 
+            string name)
+        {
+            return profile.PartitionKeyName == name || profile.SortKeyName == name;
         }
     }
 }
