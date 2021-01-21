@@ -10,6 +10,10 @@ using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Repositories
 {
+    // TODOS
+    // TODO Whether or not to update unmapped values
+    // TODO use preferred name when writing to DynamoDB
+    
     public class Repository : IRepository
     {
         private readonly ConversionManager _conversionManager;
