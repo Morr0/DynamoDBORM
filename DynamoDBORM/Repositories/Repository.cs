@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using DynamoDBORM.Converters;
 using DynamoDBORM.Exceptions.Repositories;
+using DynamoDBORM.Repositories.Implementation;
 using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Repositories
@@ -80,6 +81,7 @@ namespace DynamoDBORM.Repositories
 
         public Task Update<T>(T obj) where T : new()
         {
+            // TODO throw if non-existent
             var profile = EnsureProfile<T>();
             return _impl.Update<T>(_client, profile, obj);
         }
@@ -88,6 +90,7 @@ namespace DynamoDBORM.Repositories
             Expression<Func<TModel, TProperty>> expression, TProperty value)
             where TModel : new()
         {
+            // TODO throw if non-existent
             var profile = EnsureProfile<TModel>();
             
             var expr = expression.Body as MemberExpression;

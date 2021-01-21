@@ -14,7 +14,7 @@ namespace ConsoleTestApp
 
             string id = "2021/01/";
             var obj = await repository.UpdateProperty<Sample, string>(id, null,
-                x => x.Something, "BBQ").ConfigureAwait(false);
+                x => x.Something, "BBQ44").ConfigureAwait(false);
             WriteLine(obj.Something);
 
             await Task.Delay(1000);
