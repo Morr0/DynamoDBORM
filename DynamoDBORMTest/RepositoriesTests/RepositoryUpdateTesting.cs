@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
 using Amazon.DynamoDBv2.Model;
@@ -17,24 +18,95 @@ namespace DynamoDBORMTest.RepositoriesTests
 
         public RepositoryUpdateTesting()
         {
-            _sut = new Repository(new ConversionManager(), _dynamoDBClient.Object, Utilities.Profiles);
+            _sut = new Repository(new ConversionManager(), _dynamoDBClient.Object);
         }
         
         [Fact]
-        public async Task ShouldUpdateInDynamoDB()
+        public async Task ShouldUpdateInDynamoDb()
         {
             // Arrange
+            string something = "NNN";
+            var obj = new MultipleProps
+            {
+                Id = "UU",
+                Something = something
+            };
+            
             _dynamoDBClient.Setup(x => 
                     x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(new UpdateItemResponse());
+                .ReturnsAsync(It.IsAny<UpdateItemResponse>());
             
             // Act
-            await _sut.Update(new Basic
-            {
-                Id = ";"
-            });
+            await _sut.Update(obj);
             
             // Assert
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldUpdatePropertyInDynamoDb()
+        {
+            // Arrange
+            string updateValue = "KKKKnwdf";
+            var obj = new MultipleProps
+            {
+                Id = "UU",
+                Something = updateValue
+            };
+
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new UpdateItemResponse
+                {
+                    Attributes = new Dictionary<string, AttributeValue>
+                    {
+                        {nameof(MultipleProps.Id), new AttributeValue{S = obj.Id}},
+                        {nameof(MultipleProps.Something), new AttributeValue{ S = updateValue}}
+                    }
+                });
+            
+            // Act
+            var obj1 = await _sut.UpdateProperty(obj.Id, null, 
+                (MultipleProps x) => x.Something,
+                updateValue);
+            
+            // Assert
+            Assert.Equal(updateValue, obj1.Something);
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldUpdatePropertyForNullInDynamoDb()
+        {
+            // Arrange
+            var obj = new MultipleProps
+            {
+                Id = "UU",
+                Something = null
+            };
+
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(new UpdateItemResponse
+                {
+                    Attributes = new Dictionary<string, AttributeValue>
+                    {
+                        {nameof(MultipleProps.Id), new AttributeValue{S = obj.Id}},
+                        {nameof(MultipleProps.Something), new AttributeValue{ S = null}}
+                    }
+                });
+            
+            // Act
+            var obj1 = await _sut.UpdateProperty(obj.Id, null, 
+                (MultipleProps x) => x.Something,
+                null);
+            
+            // Assert
+            Assert.Null(obj1.Something);
             _dynamoDBClient.Verify(x => 
                 x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
         }

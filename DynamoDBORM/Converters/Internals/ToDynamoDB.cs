@@ -10,7 +10,7 @@ namespace DynamoDBORM.Converters.Internals
         {
             // Strings
             { typeof(char), (obj) => new AttributeValue{ S = obj?.ToString()}},
-            { typeof(string), (obj) => new AttributeValue{ S = obj?.ToString()}},
+            { typeof(string), (obj) => new AttributeValue{ S = obj?.ToString() ?? ""}},
             { typeof(char[]), (obj) => new AttributeValue{ S = new string((char[])obj)}},
             // Byte
             { typeof(byte), (obj) => new AttributeValue{ N = obj?.ToString()}},

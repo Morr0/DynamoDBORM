@@ -10,37 +10,18 @@ using Xunit;
 
 namespace DynamoDBORMTest.RepositoriesTests
 {
-    public class RepositoryAddDeleteTesting
+    public class RepositoryRemoveTesting
     {
         private Mock<AmazonDynamoDBClient> _dynamoDBClient = new Mock<AmazonDynamoDBClient>();
         private IRepository _sut;
 
-        public RepositoryAddDeleteTesting()
+        public RepositoryRemoveTesting()
         {
-            _sut = new Repository(new ConversionManager(), _dynamoDBClient.Object, Utilities.Profiles);
+            _sut = new Repository(new ConversionManager(), _dynamoDBClient.Object);
         }
-
+        
         [Fact]
-        public async Task ShouldAddToDynamoDB()
-        {
-            // Arrange
-            _dynamoDBClient.Setup(x =>
-                    x.PutItemAsync(It.IsAny<PutItemRequest>(), CancellationToken.None))
-                .ReturnsAsync(new PutItemResponse());
-
-            // Act
-            await _sut.Add(new Basic
-            {
-                Id = "kfk"
-            });
-
-            // Assert
-            _dynamoDBClient.Verify(x => x.PutItemAsync(It.IsAny<PutItemRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-
-        }
-
-        [Fact]
-        public async Task ShouldDeleteInDynamoDB()
+        public async Task ShouldRemoveInDynamoDb()
         {
             // Arrange
             string id = "k";

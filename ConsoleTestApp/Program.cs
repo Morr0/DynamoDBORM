@@ -11,17 +11,14 @@ namespace ConsoleTestApp
         {
             var repositoryFactory = new RepositoryFactory();
             var repository = repositoryFactory.Create();
-
+            
             string id = "2021/01/";
+            string preUpdate = await repository.GetProperty(id, null,
+                (Sample x) => x.Something).ConfigureAwait(false);
+            WriteLine(string.IsNullOrEmpty(preUpdate));
             var obj = await repository.UpdateProperty<Sample, string>(id, null,
-                x => x.Something, "BBQ44").ConfigureAwait(false);
+                x => x.Something, "Pepsi").ConfigureAwait(false);
             WriteLine(obj.Something);
-
-            await Task.Delay(1000);
-
-            string value = await repository.GetProperty<Sample, string>(id, null, 
-                x => x.Something).ConfigureAwait(false);
-            WriteLine(value);
         }
     }
 }

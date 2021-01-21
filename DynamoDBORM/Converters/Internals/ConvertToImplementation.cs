@@ -53,10 +53,10 @@ namespace DynamoDBORM.Converters.Internals
 
         private AttributeValue GetAttribute<T>(PropertyInfo prop, T table)
         {
-            AttributeValue attributeValue = _manager.ToAttVal[prop.PropertyType](prop.GetValue(table));
-            if (attributeValue == null) throw new UnsupportedTypeException(prop.PropertyType);
+            if (!_manager.ToAttVal.ContainsKey(prop.PropertyType))
+                throw new UnsupportedTypeException(prop.PropertyType);
             
-            return attributeValue;
+            return _manager.ToAttVal[prop.PropertyType](prop.GetValue(table));
         }
     }
 }

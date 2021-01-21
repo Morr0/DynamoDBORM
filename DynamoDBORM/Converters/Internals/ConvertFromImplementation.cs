@@ -63,9 +63,10 @@ namespace DynamoDBORM.Converters.Internals
 
         private void SetValue<T>(PropertyInfo prop, T obj, AttributeValue attributeValue)
         {
-            object propValue = _manager.FromAttVal[prop.PropertyType](attributeValue);
-            if (propValue is null) throw new UnsupportedTypeException(typeof(T));
+            if (!_manager.FromAttVal.ContainsKey(prop.PropertyType))
+                throw new UnsupportedTypeException(typeof(T));
             
+            object propValue = _manager.FromAttVal[prop.PropertyType](attributeValue);
             prop.SetValue(obj, propValue);
         }
     }

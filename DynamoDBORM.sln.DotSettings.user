@@ -16,5 +16,9 @@
     &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.RepositoriesTests.RepositoryAddDeleteTesting.ShouldDeleteInDynamoDB&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.ValidationTests.HasOnlySupportedTypesValidatorTesting.ShouldThrowWhenUnsupportedTypeUsed&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.ValidationTests.NoValidatorsTesting.ShouldThrowWhenUnsupportedTypeUsed&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.RepositoriesTests.RepositoryReadTesting&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.RepositoriesTests.RepositoryUpdateTesting&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.RepositoriesTests.RepositoryAddTesting&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::280E56BB-3687-447B-A124-A75C5C3C7245::net5.0::DynamoDBORMTest.RepositoriesTests.RepositoryRemoveTesting&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
