@@ -111,5 +111,75 @@ namespace DynamoDBORM.Repositories
         {
             return profile.PartitionKeyName == name || profile.SortKeyName == name;
         }
+
+        public Task AddToProperty<TModel>(object partitionKey, object sortKey, Expression<Func<TModel, int>> expression,
+            int offset) where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+            
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+            
+            if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
+
+            return _impl.AddOffsetToNumberAttribute<TModel>
+                (_client, profile, partitionKey, sortKey, expr.Member.Name, offset.ToString());
+        }
+
+        public Task AddToProperty<TModel>(object partitionKey, object sortKey, Expression<Func<TModel, long>> expression,
+            long offset) where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+            
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+            
+            if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
+
+            return _impl.AddOffsetToNumberAttribute<TModel>
+                (_client, profile, partitionKey, sortKey, expr.Member.Name, offset.ToString());
+        }
+
+        public Task AddToProperty<TModel>(object partitionKey, object sortKey, Expression<Func<TModel, float>> expression,
+            float offset) where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+            
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+            
+            if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
+
+            return _impl.AddOffsetToNumberAttribute<TModel>
+                (_client, profile, partitionKey, sortKey, expr.Member.Name, offset.ToString());
+        }
+
+        public Task AddToProperty<TModel>(object partitionKey, object sortKey, Expression<Func<TModel, double>> expression,
+            double offset) where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+            
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+            
+            if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
+
+            return _impl.AddOffsetToNumberAttribute<TModel>
+                (_client, profile, partitionKey, sortKey, expr.Member.Name, offset.ToString());
+        }
+
+        public Task AddToProperty<TModel>(object partitionKey, object sortKey, Expression<Func<TModel, decimal>> expression,
+            decimal offset) where TModel : new()
+        {
+            var profile = EnsureProfile<TModel>();
+            
+            var expr = expression.Body as MemberExpression;
+            if (expr is null) throw new PropertyNotSelectedException();
+            
+            if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
+
+            return _impl.AddOffsetToNumberAttribute<TModel>
+                (_client, profile, partitionKey, sortKey, expr.Member.Name, offset.ToString());
+        }
     }
 }

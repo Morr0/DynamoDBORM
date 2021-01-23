@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.DynamoDBv2;
@@ -130,6 +129,86 @@ namespace DynamoDBORMTest.RepositoriesTests
             await Assert.ThrowsAsync<CannotUpdatePrimaryKeyException>(async() => await task);
             _dynamoDBClient.Verify(x => 
                 x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Never);
+        }
+
+        [Fact]
+        public async Task ShouldUpdateIntPropertyInDynamoDb()
+        {
+            // Arrange
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<UpdateItemResponse>());
+            // Act
+            await _sut.AddToProperty("HHH", null, (MultipleProps x) => x.NumInt, 1);
+            
+            // Assert
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldUpdateLongPropertyInDynamoDb()
+        {
+            // Arrange
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<UpdateItemResponse>());
+            // Act
+            await _sut.AddToProperty("HHH", null, (MultipleProps x) => x.NumLong, 1);
+            
+            // Assert
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldUpdateFloatPropertyInDynamoDb()
+        {
+            // Arrange
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<UpdateItemResponse>());
+            // Act
+            await _sut.AddToProperty("HHH", null, (MultipleProps x) => x.NumFloat, 1);
+            
+            // Assert
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldUpdateDoublePropertyInDynamoDb()
+        {
+            // Arrange
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<UpdateItemResponse>());
+            // Act
+            await _sut.AddToProperty("HHH", null, (MultipleProps x) => x.NumDouble, 1);
+            
+            // Assert
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
+        }
+        
+        [Fact]
+        public async Task ShouldUpdateDecimalPropertyInDynamoDb()
+        {
+            // Arrange
+            _dynamoDBClient.Setup(x => 
+                    x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), 
+                        It.IsAny<CancellationToken>()))
+                .ReturnsAsync(It.IsAny<UpdateItemResponse>());
+            // Act
+            await _sut.AddToProperty("HHH", null, (MultipleProps x) => x.NumDecimal, 1);
+            
+            // Assert
+            _dynamoDBClient.Verify(x => 
+                x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
         }
     }
 }

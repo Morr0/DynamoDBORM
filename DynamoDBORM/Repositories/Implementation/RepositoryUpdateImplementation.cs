@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,6 +59,27 @@ namespace DynamoDBORM.Repositories.Implementation
 
             var response = await client.UpdateItemAsync(request).ConfigureAwait(false);
             return _conversionManager.From<TModel>(response.Attributes);
+        }
+
+        internal async Task AddOffsetToNumberAttribute<TModel>(AmazonDynamoDBClient client, TableProfile profile,
+            object partitionKey, object sortKey, string memberName, string offset) where TModel : new()
+        {
+            string attValName = $":{memberName}";
+            var values = new Dictionary<string, AttributeValue>
+            {
+                { attValName, new AttributeValue {N = offset}}
+            };
+            string updateExpr = $"ADD {memberName} {attValName}";
+            var request = new UpdateItemRequest
+            {
+                TableName = profile.TableName,
+                Key = Key(profile.PartitionKeyName, profile.SortKeyName, partitionKey, sortKey),
+                ExpressionAttributeValues = values,
+                UpdateExpression = updateExpr,
+                ReturnValues = ReturnValue.ALL_NEW
+            };
+
+            await client.UpdateItemAsync(request).ConfigureAwait(false);
         }
     }
 }
