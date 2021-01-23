@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using DynamoDBORM.Repositories;
 using static System.Console;
@@ -13,11 +14,9 @@ namespace ConsoleTestApp
             var repository = repositoryFactory.Create();
             
             string id = "2021/01/";
-            await repository.AddToProperty(id, null, (Sample s) => s.NumInt, 2).ConfigureAwait(false);
-            await repository.AddToProperty(id, null, (Sample s) => s.NumLong, 2).ConfigureAwait(false);
-            await repository.AddToProperty(id, null, (Sample s) => s.NumFloat, 2).ConfigureAwait(false);
-            await repository.AddToProperty(id, null, (Sample s) => s.NumDouble, 2).ConfigureAwait(false);
-            await repository.AddToProperty(id, null, (Sample s) => s.NumDecimal, 2).ConfigureAwait(false);
+            var sample = await repository.Get<Sample>("1", null).ConfigureAwait(false);
+            WriteLine(sample.Decimals.Count);
+
         }
     }
 }

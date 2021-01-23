@@ -1,4 +1,5 @@
-﻿using DynamoDBORM.Attributes;
+﻿using System.Collections.Generic;
+using DynamoDBORM.Attributes;
 
 namespace ConsoleTestApp
 {
@@ -8,11 +9,11 @@ namespace ConsoleTestApp
         public string Id { get; set; }
 
         public string Something { get; set; }
-        
-        public int NumInt { get; set; }
-        public long NumLong { get; set; }
-        public float NumFloat { get; set; }
-        public double NumDouble{ get; set; }
-        public decimal NumDecimal { get; set; }
+
+        public List<int> Ints { get; set; }
+        public List<long> Longs { get; set; }
+        public List<float> Floats { get; set; }
+        public List<double> Doubles { get; set; }
+        public List<decimal> Decimals { get; set; }
     }
 }
