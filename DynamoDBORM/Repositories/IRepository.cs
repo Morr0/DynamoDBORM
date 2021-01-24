@@ -21,7 +21,7 @@ namespace DynamoDBORM.Repositories
         
         Task Update<T>(T obj) where T : new();
 
-        Task<TModel> UpdateProperty<TModel, TProperty>(object partitionKey, object sortKey,
+        Task UpdateProperty<TModel, TProperty>(object partitionKey, object sortKey,
             Expression<Func<TModel, TProperty>> expr, TProperty value)
             where TModel : new();
         Task AddToProperty<TModel>(object partitionKey, object sortKey,

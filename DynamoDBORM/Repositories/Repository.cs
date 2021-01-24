@@ -90,7 +90,7 @@ namespace DynamoDBORM.Repositories
             return _impl.Update<T>(_client, profile, obj);
         }
 
-        public async Task<TModel> UpdateProperty<TModel, TProperty>(object partitionKey, object sortKey,
+        public Task UpdateProperty<TModel, TProperty>(object partitionKey, object sortKey,
             Expression<Func<TModel, TProperty>> expression, TProperty value)
             where TModel : new()
         {
@@ -102,14 +102,15 @@ namespace DynamoDBORM.Repositories
             
             if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
 
-            return await _impl.UpdateProperty<TModel, TProperty>(_client, profile, partitionKey, sortKey,
-                expr.Member.Name, value).ConfigureAwait(false);
+            return _impl.UpdateProperty<TModel, TProperty>(_client, profile, partitionKey, sortKey,
+                expr.Member.Name, value);
         }
 
         private bool IsTryingToUpdatePrimaryKey(TableProfile profile, 
             string name)
         {
-            return profile.PartitionKeyName == name || profile.SortKeyName == name;
+            string dynamoDbName = profile.PropNameToDynamoDbName[name];
+            return profile.PartitionKeyName == dynamoDbName || profile.SortKeyName == dynamoDbName;
         }
 
         public Task AddToProperty<TModel>(object partitionKey, object sortKey, Expression<Func<TModel, int>> expression,

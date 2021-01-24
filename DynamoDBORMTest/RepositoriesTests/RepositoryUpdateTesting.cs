@@ -69,12 +69,11 @@ namespace DynamoDBORMTest.RepositoriesTests
                 });
             
             // Act
-            var obj1 = await _sut.UpdateProperty(obj.Id, null, 
+            await _sut.UpdateProperty(obj.Id, null, 
                 (MultipleProps x) => x.Something,
                 updateValue);
             
             // Assert
-            Assert.Equal(updateValue, obj1.Something);
             _dynamoDBClient.Verify(x => 
                 x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
         }
@@ -102,12 +101,11 @@ namespace DynamoDBORMTest.RepositoriesTests
                 });
             
             // Act
-            var obj1 = await _sut.UpdateProperty(obj.Id, null, 
+            await _sut.UpdateProperty(obj.Id, null, 
                 (MultipleProps x) => x.Something,
                 null);
             
             // Assert
-            Assert.Null(obj1.Something);
             _dynamoDBClient.Verify(x => 
                 x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Once);
         }
@@ -115,18 +113,8 @@ namespace DynamoDBORMTest.RepositoriesTests
         [Fact]
         public async Task ShouldThrowWhenUpdatingAnyPrimaryKey()
         {
-            // Arrange
-            var obj = new Basic
-            {
-                Id = "UU"
-            };
-
-            // Act
-            var task = _sut.UpdateProperty(obj.Id, null, 
-                (Basic x) => x.Id, null);
-            
-            // Assert
-            await Assert.ThrowsAsync<CannotUpdatePrimaryKeyException>(async() => await task);
+            await Assert.ThrowsAsync<CannotUpdatePrimaryKeyException>(async() 
+                => await _sut.UpdateProperty("1", null, (Basic x) => x.Id, null));
             _dynamoDBClient.Verify(x => 
                 x.UpdateItemAsync(It.IsAny<UpdateItemRequest>(), CancellationToken.None), Times.Never);
         }
