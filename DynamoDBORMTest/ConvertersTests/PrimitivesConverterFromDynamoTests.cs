@@ -5,6 +5,7 @@ using DynamoDBORM.Converters;
 using DynamoDBORM.Converters.Internals;
 using DynamoDBORM.Exceptions.Converters;
 using DynamoDBORM.Exceptions.Validations;
+using DynamoDBORM.Utilities;
 using DynamoDBORMTest.ConvertersTests.DummyClasses;
 using Xunit;
 
@@ -22,8 +23,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 { nameof(OneProp.Id), new AttributeValue { S = value}}
             };
-
-            var obj = _sut.From<OneProp>(dict);
+            var profile = TypeToTableProfile.Get(typeof(OneProp));
+            var obj = _sut.From<OneProp>(profile, dict);
             
             Assert.Equal(value, obj.Id);
         }
@@ -38,8 +39,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 { nameof(OneProp.Id), new AttributeValue { S = value}},
                 { nameof(nonExistPropName), new AttributeValue{ S = "jf"}}
             };
-
-            var obj = _sut.From<OneProp>(dict);
+            var profile = TypeToTableProfile.Get(typeof(OneProp));
+            var obj = _sut.From<OneProp>(profile, dict);
         }
 
         [Fact]
@@ -50,8 +51,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 { nameof(CompositePrimaryKeyPropsOnly.PartitionKey), new AttributeValue { S = "4646"}},
                 { nameof(CompositePrimaryKeyPropsOnly.SortKey), new AttributeValue{ S = "jf"}}
             };
-
-            Action action = () => _sut.From<OneProp>(dict);
+            var profile = TypeToTableProfile.Get(typeof(OneProp));
+            Action action = () => _sut.From<OneProp>(profile, dict);
 
             Assert.Throws<PrimaryKeyInModelNonExistentInDynamoDBException>(action);
         }
@@ -65,8 +66,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 
                 { "k", new AttributeValue{ S = "jf"}}
             };
-
-            Action action = () => _sut.From<CompositePrimaryKeyPropsOnly>(dict);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsOnly));
+            Action action = () => _sut.From<CompositePrimaryKeyPropsOnly>(profile, dict);
 
             Assert.Throws<PrimaryKeyInModelNonExistentInDynamoDBException>(action);
         }
@@ -81,8 +82,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 { nameof(CompositePrimaryKeyPropsOnly.PartitionKey), new AttributeValue { S = partition}},
                 { nameof(CompositePrimaryKeyPropsOnly.SortKey), new AttributeValue{ S = sort}}
             };
-
-            var obj = _sut.From<CompositePrimaryKeyPropsOnly>(dict);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsOnly));
+            var obj = _sut.From<CompositePrimaryKeyPropsOnly>(profile, dict);
             
             Assert.Equal(partition, obj.PartitionKey);
             Assert.Equal(sort, obj.SortKey);
@@ -97,8 +98,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 { nameof(CompositePrimaryKeyPropsWithOneUnmapped.PartitionKey), new AttributeValue { S = ""}},
                 { nameof(CompositePrimaryKeyPropsWithOneUnmapped.Unmapped), new AttributeValue{ S = value}}
             };
-
-            var obj = _sut.From<CompositePrimaryKeyPropsWithOneUnmapped>(dict);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsWithOneUnmapped));
+            var obj = _sut.From<CompositePrimaryKeyPropsWithOneUnmapped>(profile, dict);
             
             Assert.NotEqual(value, obj.Unmapped);
         }
@@ -112,8 +113,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 { nameof(DifferentNamedProperty.Id), new AttributeValue{ S = "kg"}},
                 { DifferentNamedProperty.SecondName, new AttributeValue{ S = value}}
             };
-
-            var obj = _sut.From<DifferentNamedProperty>(dict);
+            var profile = TypeToTableProfile.Get(typeof(DifferentNamedProperty));
+            var obj = _sut.From<DifferentNamedProperty>(profile, dict);
 
             Assert.Equal(value, obj.X);
         }
@@ -126,8 +127,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 { DifferentNamedPartitionKey.IdName, new AttributeValue{ S = value}}
             };
-
-            var obj = _sut.From<DifferentNamedPartitionKey>(dict);
+            var profile = TypeToTableProfile.Get(typeof(DifferentNamedPartitionKey));
+            var obj = _sut.From<DifferentNamedPartitionKey>(profile, dict);
 
             Assert.Equal(value, obj.Id);
         }
@@ -141,8 +142,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 { DifferentNamedPartitionAndSortKey.PartitionName, new AttributeValue{ S = value}},
                 { DifferentNamedPartitionAndSortKey.SortName, new AttributeValue{ S = value}},
             };
-
-            var obj = _sut.From<DifferentNamedPartitionAndSortKey>(dict);
+            var profile = TypeToTableProfile.Get(typeof(DifferentNamedPartitionAndSortKey));
+            var obj = _sut.From<DifferentNamedPartitionAndSortKey>(profile, dict);
 
             Assert.Equal(value, obj.Partition);
             Assert.Equal(value, obj.Sort);
@@ -156,8 +157,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 { nameof(GuidProp.Id), new AttributeValue{ S = id}}
             };
-
-            var obj = _sut.From<GuidProp>(dict);
+            var profile = TypeToTableProfile.Get(typeof(GuidProp));
+            var obj = _sut.From<GuidProp>(profile, dict);
             
             Assert.Equal(id, obj.Id.ToString());
         }

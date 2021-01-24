@@ -2,6 +2,7 @@
 using DynamoDBORM.Converters;
 using DynamoDBORM.Converters.Internals;
 using DynamoDBORM.Exceptions.Converters;
+using DynamoDBORM.Utilities;
 using DynamoDBORMTest.ConvertersTests.DummyClasses;
 using Xunit;
 
@@ -15,8 +16,8 @@ namespace DynamoDBORMTest.ConvertersTests
         public void ShouldThrowNullWhenConvertingAndPartitionKeyIsNull()
         {
             var oneProp = new OneProp();
-
-            Action action = () => _sut.To(oneProp);
+            var profile = TypeToTableProfile.Get(typeof(OneProp));
+            Action action = () => _sut.To(profile, oneProp);
 
             Assert.Throws<NullPartitionKeyException>(action);
         }
@@ -28,8 +29,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 PartitionKey = "Some Partition"
             };
-
-            Action action = () => _sut.To(composite);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsOnly));
+            Action action = () => _sut.To(profile, composite);
 
             Assert.Throws<NullSortKeyException>(action);
         }
@@ -42,8 +43,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 PartitionKey = "1",
                 SortKey = "AAA"
             };
-
-            var attrs = _sut.To(composite);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsOnly));
+            var attrs = _sut.To(profile, composite);
             
             Assert.Equal(2, attrs.Count);
         }
@@ -55,8 +56,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 PartitionKey = "sfn"
             };
-
-            _sut.To(obj);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsWithOneUnmapped));
+            _sut.To(profile, obj);
         }
 
         [Fact]
@@ -66,8 +67,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 PartitionKey = "klg"
             };
-
-            var attrs = _sut.To(obj);
+            var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsWithOneUnmapped));
+            var attrs = _sut.To(profile, obj);
             
             Assert.Equal(2, attrs.Count);
         }
@@ -79,8 +80,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 Id = "k"
             };
-
-            var attrs = _sut.To(obj);
+            var profile = TypeToTableProfile.Get(typeof(DifferentNamedProperty));
+            var attrs = _sut.To(profile, obj);
             
             Assert.True(attrs.ContainsKey(nameof(DifferentNamedProperty.Id)));
             Assert.False(attrs.ContainsKey(nameof(DifferentNamedProperty.X)));
@@ -94,8 +95,8 @@ namespace DynamoDBORMTest.ConvertersTests
             {
                 Id = "k"
             };
-
-            var attrs = _sut.To(obj);
+            var profile = TypeToTableProfile.Get(typeof(DifferentNamedPartitionKey));
+            var attrs = _sut.To(profile, obj);
             
             Assert.True(attrs.ContainsKey(DifferentNamedPartitionKey.IdName));
             Assert.False(attrs.ContainsKey(nameof(DifferentNamedPartitionKey.Id)));
@@ -109,8 +110,8 @@ namespace DynamoDBORMTest.ConvertersTests
                 Partition = "parition",
                 Sort = "sort"
             };
-
-            var attrs = _sut.To(obj);
+            var profile = TypeToTableProfile.Get(typeof(DifferentNamedPartitionAndSortKey));
+            var attrs = _sut.To(profile, obj);
             
             Assert.True(attrs.ContainsKey(DifferentNamedPartitionAndSortKey.PartitionName));
             Assert.True(attrs.ContainsKey(DifferentNamedPartitionAndSortKey.SortName));
@@ -122,8 +123,8 @@ namespace DynamoDBORMTest.ConvertersTests
         public void ConvertFromGuidToStringInDynamoDB()
         {
             var obj = new GuidProp();
-
-            var attrs = _sut.To(obj);
+            var profile = TypeToTableProfile.Get(typeof(GuidProp));
+            var attrs = _sut.To(profile, obj);
             
             Assert.Equal(obj.Id.ToString(), attrs[nameof(GuidProp.Id)].S);
         }

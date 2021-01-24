@@ -1,7 +1,8 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using DynamoDBORM.Attributes;
-using DynamoDBORM.Repositories;
 
+[assembly: InternalsVisibleTo("DynamoDBORMTest")]
 namespace DynamoDBORM.Utilities
 {
     internal static class TypeToTableProfile
@@ -25,8 +26,10 @@ namespace DynamoDBORM.Utilities
                 var sortKeyAttribute = dict[typeof(SortKeyAttribute)].Attribute as SortKeyAttribute;
                 if (!string.IsNullOrEmpty(sortKeyAttribute.Name)) sortKeyName = sortKeyAttribute.Name;
             }
+
+            var attNames = TableModelUtil.GetDynamoDbNamesPerPropName(ref type);
             
-            return new TableProfile(tableName, partitionKeyName, sortKeyName);
+            return new TableProfile(tableName, partitionKeyName, sortKeyName, attNames);
         }
     }
 }

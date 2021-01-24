@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters.Internals;
+using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters
 {
@@ -41,8 +42,10 @@ namespace DynamoDBORM.Converters
         internal Dictionary<Type, Func<object, AttributeValue>> ToAttVal = new();
         internal Dictionary<Type, Func<AttributeValue, object>> FromAttVal = new();
 
-        public Dictionary<string, AttributeValue> To<T>(T table) => _toImpl.To(table);
+        internal Dictionary<string, AttributeValue> To<T>(TableProfile profile, T table) 
+            => _toImpl.To(profile, table);
 
-        public T From<T>(Dictionary<string, AttributeValue> attrs) where T : new() => _fromImpl.From<T>(attrs);
+        internal T From<T>(TableProfile profile, Dictionary<string, AttributeValue> attrs) where T : new() 
+            => _fromImpl.From<T>(profile, attrs);
     }
 }

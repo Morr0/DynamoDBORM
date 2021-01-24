@@ -13,7 +13,7 @@ namespace DynamoDBORM.Repositories.Implementation
             var request = new PutItemRequest
             {
                 TableName = profile.TableName,
-                Item = _conversionManager.To(obj)
+                Item = _conversionManager.To(profile, obj)
             };
 
             return client.PutItemAsync(request, CancellationToken.None);

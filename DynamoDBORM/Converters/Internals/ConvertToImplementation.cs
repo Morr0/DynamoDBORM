@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions.Converters;
 using DynamoDBORM.Exceptions.Validations;
+using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters.Internals
 {
@@ -16,37 +17,46 @@ namespace DynamoDBORM.Converters.Internals
             _manager = manager;
         }
         
-        public Dictionary<string, AttributeValue> To<T>(T table)
+        public Dictionary<string, AttributeValue> To<T>(TableProfile profile, T table)
         {
             var dict = new Dictionary<string, AttributeValue>();
+            var type = table.GetType();
 
-            foreach (var prop in typeof(T).GetProperties())
+            foreach (var pair in profile.PropNameToDynamoDbName)
             {
-                if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
+                string propName = pair.Key;
+                string dynamoDbName = pair.Value;
                 
-                string propName = prop.Name;
-                var partitionKeyAttribute = prop.GetCustomAttribute<PartitionKeyAttribute>();
-                var sortKeyAttribute = prop.GetCustomAttribute<SortKeyAttribute>();
-                var attributeNameAttribute = prop.GetCustomAttribute<AttributeNameAttribute>();
-
-                if (partitionKeyAttribute is not null)
-                {
-                    propName = !string.IsNullOrEmpty(partitionKeyAttribute.Name) ? partitionKeyAttribute.Name : propName;
-                    if (prop.GetValue(table) is null) throw new NullPartitionKeyException();
-                } else if (sortKeyAttribute is not null)
-                {
-                    propName = !string.IsNullOrEmpty(sortKeyAttribute.Name) ? sortKeyAttribute.Name : propName;
-                    if (prop.GetValue(table) is null) throw new NullSortKeyException();
-                }
-                else if (attributeNameAttribute is not null)
-                {
-                    propName = !string.IsNullOrEmpty(attributeNameAttribute.Name)
-                        ? attributeNameAttribute.Name
-                        : propName;
-                }
-
-                dict.Add(propName, GetAttribute(prop, table));
+                dict.Add(dynamoDbName, GetAttribute(type.GetProperty(propName), table));
             }
+
+            // foreach (var prop in typeof(T).GetProperties())
+            // {
+            //     if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
+            //     
+            //     string propName = prop.Name;
+            //     var partitionKeyAttribute = prop.GetCustomAttribute<PartitionKeyAttribute>();
+            //     var sortKeyAttribute = prop.GetCustomAttribute<SortKeyAttribute>();
+            //     var attributeNameAttribute = prop.GetCustomAttribute<AttributeNameAttribute>();
+            //
+            //     if (partitionKeyAttribute is not null)
+            //     {
+            //         propName = !string.IsNullOrEmpty(partitionKeyAttribute.Name) ? partitionKeyAttribute.Name : propName;
+            //         if (prop.GetValue(table) is null) throw new NullPartitionKeyException();
+            //     } else if (sortKeyAttribute is not null)
+            //     {
+            //         propName = !string.IsNullOrEmpty(sortKeyAttribute.Name) ? sortKeyAttribute.Name : propName;
+            //         if (prop.GetValue(table) is null) throw new NullSortKeyException();
+            //     }
+            //     else if (attributeNameAttribute is not null)
+            //     {
+            //         propName = !string.IsNullOrEmpty(attributeNameAttribute.Name)
+            //             ? attributeNameAttribute.Name
+            //             : propName;
+            //     }
+            //
+            //     dict.Add(propName, GetAttribute(prop, table));
+            // }
 
             return dict;
         }

@@ -34,7 +34,7 @@ namespace DynamoDBORM.Repositories
         {
             var profile = EnsureProfile<T>();
             var dict = await _impl.Get<T>(_client, profile, partitionKey, sortKey).ConfigureAwait(false);
-            return _conversionManager.From<T>(dict);
+            return _conversionManager.From<T>(profile, dict);
         }
 
         public async Task<TProperty> GetProperty<TModel, TProperty>
@@ -64,7 +64,7 @@ namespace DynamoDBORM.Repositories
             var list = new List<T>(listOfDicts.Count);
             foreach (var dict in listOfDicts)
             {
-                var model = _conversionManager.From<T>(dict);
+                var model = _conversionManager.From<T>(profile, dict);
                 list.Add(model);
             }
 

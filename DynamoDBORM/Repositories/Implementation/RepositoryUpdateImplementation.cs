@@ -58,7 +58,7 @@ namespace DynamoDBORM.Repositories.Implementation
             };
 
             var response = await client.UpdateItemAsync(request).ConfigureAwait(false);
-            return _conversionManager.From<TModel>(response.Attributes);
+            return _conversionManager.From<TModel>(profile, response.Attributes);
         }
 
         internal async Task AddOffsetToNumberAttribute<TModel>(AmazonDynamoDBClient client, TableProfile profile,

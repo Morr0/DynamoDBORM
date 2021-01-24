@@ -4,6 +4,7 @@ using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Attributes;
 using DynamoDBORM.Exceptions.Converters;
 using DynamoDBORM.Exceptions.Validations;
+using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters.Internals
 {
@@ -16,25 +17,37 @@ namespace DynamoDBORM.Converters.Internals
             _manager = manager;
         }
 
-        public T From<T>(Dictionary<string, AttributeValue> attrsValues) where T : new()
+        public T From<T>(TableProfile profile, Dictionary<string, AttributeValue> attrsValues) where T : new()
         {
             T obj = new T();
-            
-            var props = typeof(T).GetProperties();
-            foreach (var prop in props)
+            var type = typeof(T);
+
+            foreach (var pair in profile.DynamoDbNameToPropName)
             {
-                if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
-
-                string propName = GetPropNameAsPerAttributes(prop, out bool byAttribute);
-
-                if (!attrsValues.ContainsKey(propName))
-                {
-                    if (byAttribute) throw new PrimaryKeyInModelNonExistentInDynamoDBException();
-                    continue;
-                }
-
-                SetValue(prop, obj, attrsValues[propName]);
+                string dynamoDbName = pair.Key;
+                string propName = pair.Value;
+                
+                if (!attrsValues.ContainsKey(dynamoDbName)) continue;
+                
+                SetValue(type.GetProperty(propName), obj, attrsValues[dynamoDbName]);
             }
+            
+            
+            // var props = typeof(T).GetProperties();
+            // foreach (var prop in props)
+            // {
+            //     if (prop.GetCustomAttribute<UnmappedAttribute>() is not null) continue;
+            //
+            //     string propName = GetPropNameAsPerAttributes(prop, out bool byAttribute);
+            //
+            //     if (!attrsValues.ContainsKey(propName))
+            //     {
+            //         if (byAttribute) throw new PrimaryKeyInModelNonExistentInDynamoDBException();
+            //         continue;
+            //     }
+            //
+            //     SetValue(prop, obj, attrsValues[propName]);
+            // }
 
             return obj;
         }
