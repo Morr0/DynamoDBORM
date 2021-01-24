@@ -11,7 +11,7 @@ namespace ConsoleTestApp
         static async Task Main(string[] args)
         {
             var repositoryFactory = new RepositoryFactory();
-            var repository = repositoryFactory.Create();
+            var repository = repositoryFactory.CreateFromEndpoint("http://localhost:8000");
 
             string id = "n";
             await repository.Add(new Sample
