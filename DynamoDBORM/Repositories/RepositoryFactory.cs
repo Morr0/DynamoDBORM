@@ -12,9 +12,10 @@ namespace DynamoDBORM.Repositories
             _conversionManager = new ConversionManager();
         }
 
-        public IRepository Create()
+        public IRepository Create(AmazonDynamoDBClient client = null)
         {
-            return new Repository(_conversionManager, new AmazonDynamoDBClient());
+            client ??= new AmazonDynamoDBClient();
+            return new Repository(_conversionManager, client);
         }
     }
 }
