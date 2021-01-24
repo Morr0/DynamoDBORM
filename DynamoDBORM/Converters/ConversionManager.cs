@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Amazon.DynamoDBv2.Model;
 using DynamoDBORM.Converters.Internals;
-using DynamoDBORM.Utilities;
 
 namespace DynamoDBORM.Converters
 {
@@ -31,13 +31,15 @@ namespace DynamoDBORM.Converters
         {
             foreach (var converter in _converters)
             {
-                ToAttVal.AddOther(converter.GetTosMappings);
-                FromAttVal.AddOther(converter.GetFromsMappings);
+                ToAttVal = ToAttVal.Concat(converter.GetTosMappings).ToDictionary
+                    (x => x.Key, x => x.Value);
+                FromAttVal = FromAttVal.Concat(converter.GetFromsMappings).ToDictionary
+                    (x => x.Key, x => x.Value);
             }
         }
 
-        internal readonly Dictionary<Type, Func<object, AttributeValue>> ToAttVal = new();
-        internal readonly Dictionary<Type, Func<AttributeValue, object>> FromAttVal = new();
+        internal Dictionary<Type, Func<object, AttributeValue>> ToAttVal = new();
+        internal Dictionary<Type, Func<AttributeValue, object>> FromAttVal = new();
 
         public Dictionary<string, AttributeValue> To<T>(T table) => _toImpl.To(table);
 
