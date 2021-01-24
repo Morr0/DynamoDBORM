@@ -109,7 +109,8 @@ namespace DynamoDBORM.Repositories
         private bool IsTryingToUpdatePrimaryKey(TableProfile profile, 
             string name)
         {
-            string dynamoDbName = profile.PropNameToDynamoDbName[name];
+            string dynamoDbName = profile.PropNameToDynamoDbName.ContainsKey(name) ?
+                profile.PropNameToDynamoDbName[name] : name;
             return profile.PartitionKeyName == dynamoDbName || profile.SortKeyName == dynamoDbName;
         }
 

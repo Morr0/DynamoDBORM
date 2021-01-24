@@ -8,7 +8,7 @@ namespace ConsoleTestApp
         [PartitionKey]
         public string Id { get; set; }
 
-        [AttributeName(Name = "_something")]
+        [AttributeName("something1")]
         public string Something { get; set; }
 
         public List<int> Ints { get; set; }

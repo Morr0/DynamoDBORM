@@ -12,10 +12,16 @@ namespace ConsoleTestApp
         {
             var repositoryFactory = new RepositoryFactory();
             var repository = repositoryFactory.Create();
-            
-            string id = "2021/01/";
-            var sample = await repository.Get<Sample>("1", null).ConfigureAwait(false);
-            WriteLine(sample.Decimals.Count);
+
+            string id = "n";
+            await repository.Add(new Sample
+            {
+                Id = id,
+                Something = "77"
+            });
+
+            WriteLine(await repository.GetProperty(id, null, (Sample s) => s.Something));
+
 
         }
     }

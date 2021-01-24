@@ -36,7 +36,8 @@ namespace DynamoDBORM.Repositories.Implementation
         internal async Task<TProperty> GetProperty<TProperty>(AmazonDynamoDBClient client, 
             TableProfile profile, object partitionKey, object sortKey, string memberName)
         {
-            string dynamoDbName = profile.PropNameToDynamoDbName[memberName];
+            string dynamoDbName = profile.PropNameToDynamoDbName.ContainsKey(memberName) ?
+                profile.PropNameToDynamoDbName[memberName] : memberName;
             
             var request = new GetItemRequest
             {

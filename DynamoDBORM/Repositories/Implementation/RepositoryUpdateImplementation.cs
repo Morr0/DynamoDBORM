@@ -59,7 +59,8 @@ namespace DynamoDBORM.Repositories.Implementation
         internal Task UpdateProperty<TProperty>(AmazonDynamoDBClient client, TableProfile profile, 
             object partitionKey, object sortKey, string memberName, TProperty value)
         {
-            string dynamoDbName = profile.PropNameToDynamoDbName[memberName];
+            string dynamoDbName = profile.PropNameToDynamoDbName.ContainsKey(memberName) ?
+                profile.PropNameToDynamoDbName[memberName] : memberName;
             
             string attValName = $":{dynamoDbName}";
             var request = new UpdateItemRequest
@@ -79,7 +80,8 @@ namespace DynamoDBORM.Repositories.Implementation
         internal async Task AddOffsetToNumberAttribute<TModel>(AmazonDynamoDBClient client, TableProfile profile,
             object partitionKey, object sortKey, string memberName, string offset) where TModel : new()
         {
-            string dynamoDbName = profile.PropNameToDynamoDbName[memberName];
+            string dynamoDbName = profile.PropNameToDynamoDbName.ContainsKey(memberName) ?
+                profile.PropNameToDynamoDbName[memberName] : memberName;
             
             string attValName = $":{dynamoDbName}";
             var values = new Dictionary<string, AttributeValue>
