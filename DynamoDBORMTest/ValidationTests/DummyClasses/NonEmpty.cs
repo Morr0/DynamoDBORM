@@ -12,7 +12,6 @@ namespace DynamoDBORMTest.ValidationTests.DummyClasses
     
     public class PartitionKeyAttributesShouldNotBeWithAttributeNamedAttribute
     {
-        [AttributeName]
         [PartitionKey] 
         public string PartitionKey { get; set; }
     }
@@ -21,7 +20,6 @@ namespace DynamoDBORMTest.ValidationTests.DummyClasses
     {
         [PartitionKey] 
         public string PartitionKey { get; set; }
-        [AttributeName]
         [SortKey] 
         public string SortKey { get; set; }
     }

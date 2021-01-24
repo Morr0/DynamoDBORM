@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using DynamoDBORM.Attributes;
 
@@ -11,7 +12,7 @@ namespace DynamoDBORM.Utilities
         {
             var dict = TableModelUtil.GetAttributesForTypeToTableProfile(ref type);
 
-            string tableName = type.Name;
+            string tableName = GetTableName(type);
             if (dict.ContainsKey(typeof(TableAttribute)))
             {
                 var tableAttribute = dict[typeof(TableAttribute)].Attribute as TableAttribute;
@@ -30,6 +31,12 @@ namespace DynamoDBORM.Utilities
             var attNames = TableModelUtil.GetDynamoDbNamesPerPropName(ref type);
             
             return new TableProfile(tableName, partitionKeyName, sortKeyName, attNames);
+        }
+
+        private static string GetTableName(Type type)
+        {
+            var att = type.GetCustomAttribute<TableAttribute>();
+            return att?.Name ?? type.Name;
         }
     }
 }

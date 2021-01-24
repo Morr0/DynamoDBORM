@@ -102,7 +102,7 @@ namespace DynamoDBORM.Repositories
             
             if (IsTryingToUpdatePrimaryKey(profile, expr.Member.Name)) throw new CannotUpdatePrimaryKeyException();
 
-            return _impl.UpdateProperty<TModel, TProperty>(_client, profile, partitionKey, sortKey,
+            return _impl.UpdateProperty<TProperty>(_client, profile, partitionKey, sortKey,
                 expr.Member.Name, value);
         }
 

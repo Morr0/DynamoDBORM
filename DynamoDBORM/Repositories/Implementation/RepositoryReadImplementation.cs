@@ -36,18 +36,20 @@ namespace DynamoDBORM.Repositories.Implementation
         internal async Task<TProperty> GetProperty<TProperty>(AmazonDynamoDBClient client, 
             TableProfile profile, object partitionKey, object sortKey, string memberName)
         {
+            string dynamoDbName = profile.PropNameToDynamoDbName[memberName];
+            
             var request = new GetItemRequest
             {
                 TableName = profile.TableName,
                 Key = Key(profile.PartitionKeyName, profile.SortKeyName, partitionKey, sortKey),
-                ProjectionExpression = memberName
+                ProjectionExpression = dynamoDbName
             };
 
             var response = await client.GetItemAsync(request).ConfigureAwait(false);
-            if (!response.Item.ContainsKey(memberName)) return default;
+            if (!response.Item.ContainsKey(dynamoDbName)) return default;
 
             TProperty value = (TProperty) _conversionManager.FromAttVal[typeof(TProperty)]
-                (response.Item[memberName]);
+                (response.Item[dynamoDbName]);
             return value;
         }
     }

@@ -133,19 +133,12 @@ namespace DynamoDBORMTest.RepositoriesTests
         public async Task ShouldReadNullPropertyAsNullFromDynamoDb()
         {
             // Arrange
-            string id = ";";
-            var obj = new MultipleProps()
-            {
-                Id = id,
-                Something = null
-            };
-            
             _dynamoDBClient.Setup(x => 
                     x.GetItemAsync(It.IsAny<GetItemRequest>(), It.IsAny<CancellationToken>()))
                 .ReturnsAsync(MultipleProps.DynamoGetItemResponse(null));
             
             // Arrange
-            string prop1 = await _sut.GetProperty(id, null, 
+            string prop1 = await _sut.GetProperty(";", null, 
                 (MultipleProps b) => b.Something);
             
             // Assert

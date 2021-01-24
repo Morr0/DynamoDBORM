@@ -44,7 +44,7 @@ namespace DynamoDBORMTest.ConvertersTests.DummyClasses
     {
         [PartitionKey]
         public string Id { get; set; }
-        [AttributeName(Name = SecondName)]
+        [AttributeName(SecondName)]
         public string X { get; set; }
 
         public const string SecondName = "kfdn";
