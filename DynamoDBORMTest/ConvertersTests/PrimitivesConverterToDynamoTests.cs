@@ -70,7 +70,7 @@ namespace DynamoDBORMTest.ConvertersTests
             var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsWithOneUnmapped));
             var attrs = _sut.To(profile, obj);
             
-            Assert.Equal(2, attrs.Count);
+            Assert.False(attrs.ContainsKey(nameof(CompositePrimaryKeyPropsWithOneUnmapped.Unmapped)));
         }
 
         [Fact]
@@ -107,8 +107,8 @@ namespace DynamoDBORMTest.ConvertersTests
         {
             var obj = new DifferentNamedPartitionAndSortKey
             {
-                Partition = "parition",
-                Sort = "sort"
+                Partition = DifferentNamedPartitionAndSortKey.PartitionName,
+                Sort = DifferentNamedPartitionAndSortKey.SortName
             };
             var profile = TypeToTableProfile.Get(typeof(DifferentNamedPartitionAndSortKey));
             var attrs = _sut.To(profile, obj);

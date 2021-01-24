@@ -63,12 +63,11 @@ namespace DynamoDBORMTest.ConvertersTests
             var dict = new Dictionary<string, AttributeValue>
             {
                 { nameof(CompositePrimaryKeyPropsOnly.PartitionKey), new AttributeValue { S = "4646"}},
-                
                 { "k", new AttributeValue{ S = "jf"}}
             };
             var profile = TypeToTableProfile.Get(typeof(CompositePrimaryKeyPropsOnly));
+            
             Action action = () => _sut.From<CompositePrimaryKeyPropsOnly>(profile, dict);
-
             Assert.Throws<PrimaryKeyInModelNonExistentInDynamoDBException>(action);
         }
 

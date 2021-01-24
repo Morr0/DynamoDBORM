@@ -21,6 +21,9 @@ namespace DynamoDBORM.Converters.Internals
         {
             T obj = new T();
             var type = typeof(T);
+            
+            EnsurePrimaryKeyInPlace(profile, attrsValues);
+            EnsureIndexesInPlace(profile, attrsValues);
 
             foreach (var pair in profile.DynamoDbNameToPropName)
             {
@@ -31,7 +34,6 @@ namespace DynamoDBORM.Converters.Internals
                 
                 SetValue(type.GetProperty(propName), obj, attrsValues[dynamoDbName]);
             }
-            
             
             // var props = typeof(T).GetProperties();
             // foreach (var prop in props)
@@ -50,6 +52,24 @@ namespace DynamoDBORM.Converters.Internals
             // }
 
             return obj;
+        }
+
+        private void EnsureIndexesInPlace(TableProfile profile, Dictionary<string, AttributeValue> attrsValues)
+        {
+            // TODO implement it with LSI
+        }
+
+        private void EnsurePrimaryKeyInPlace(TableProfile profile, Dictionary<string, AttributeValue> attrsValues)
+        {
+            // string dynamoDbPartitionKeyName = profile.PropNameToDynamoDbName[profile.PartitionKeyName];
+            
+            if (!attrsValues.ContainsKey(profile.PartitionKeyName))
+                throw new PrimaryKeyInModelNonExistentInDynamoDBException();
+            if (!string.IsNullOrEmpty(profile.SortKeyName) && !attrsValues.
+                ContainsKey(profile.SortKeyName))
+            {
+                throw new PrimaryKeyInModelNonExistentInDynamoDBException();
+            }
         }
 
         private string GetPropNameAsPerAttributes(PropertyInfo prop, out bool primaryKey)
